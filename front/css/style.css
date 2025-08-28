@@ -1,8 +1,9 @@
 /*For backimage*/
-.bg-image{
+.bg-image {
     background-image: url("../img/library2.jpg");
     background-repeat: no-repeat;
 }
+
 /*For backimage*/
 
 
@@ -12,14 +13,95 @@
     visibility: hidden;
     transition: opacity .8s ease-out, visibility 0s linear .5s;
     z-index: 99999;
- }
+}
 
- #spinner.show {
-     transition: opacity .8s ease-out, visibility 0s linear .0s;
-     visibility: visible;
-     opacity: 1;
- }
+#spinner.show {
+    transition: opacity .8s ease-out, visibility 0s linear .0s;
+    visibility: visible;
+    opacity: 1;
+}
+
 /*** Spinner End ***/
+/* Общие стили для карточек книг */
+.book-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.book-card img,
+.book-card video {
+    object-fit: cover;
+    width: 100%;
+    height: 180px;
+}
+
+.book-card .card-body {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.book-card h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.book-card .meta {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 6px;
+}
+
+.book-card button {
+    margin-top: auto;
+}
+
+/* Поисковые поля */
+.search-bar .input-group {
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.search-bar input {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.search-bar .input-group-text {
+    background: #fff;
+    border: none;
+}
+
+/* Пагинация */
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 3px;
+    color: #0d6efd;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
 
 .back-to-top {
     position: fixed;
@@ -128,7 +210,7 @@
     .sticky-top .top-link {
         display: none;
     }
-    
+
 }
 
 .topbar .top-link a {
@@ -156,8 +238,13 @@
 }
 
 @keyframes noteAnimate {
-    from {left: -735px;}
-    to {left: 735px;}
+    from {
+        left: -735px;
+    }
+
+    to {
+        left: 735px;
+    }
 }
 
 /*** Topbar End ***/
@@ -226,6 +313,7 @@
 #searchModal .modal-content {
     background: rgba(255, 255, 255, .8);
 }
+
 /*** Navbar End ***/
 
 
@@ -237,6 +325,7 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+
 /*** Features End ***/
 
 
@@ -257,11 +346,12 @@
     right: 0;
     opacity: 0.2;
 }
+
 /*** Top News End ***/
 
 
 /*** Latest News Start ***/
-.latest-news .latest-news-carousel.owl-carousel{
+.latest-news .latest-news-carousel.owl-carousel {
     position: relative;
 }
 
@@ -297,6 +387,7 @@
     color: var(--bs-white);
     border-radius: 10px;
 }
+
 /*** Latest News End ***/
 
 
@@ -357,16 +448,17 @@
 
 .lifestyle .lifestyle-item .lifestyle-content {
     position: absolute;
-    width: 100%; 
-    height: 100%; 
-    top: 0; 
-    left: 0; 
-    padding: 20px; 
-    display: flex; 
-    flex-direction: column; 
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
     background: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
 }
+
 /*** Whats New End ***/
 
 
@@ -389,6 +481,7 @@
     background: linear-gradient(rgba(26, 125, 255, 0.7), rgba(255, 255, 255, 0.7));
     z-index: 2;
 }
+
 /*** Banner Section End ***/
 
 
@@ -433,7 +526,5 @@
 .copyright {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 /*** Footer End ***/
-
-
-
