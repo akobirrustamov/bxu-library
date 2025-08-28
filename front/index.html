@@ -526,7 +526,7 @@
 <!--Buxoro psixologiya va xorijiy tillar institut-->
         <script>
             // const baseUrl = "http://localhost:8080";
-            const baseUrl = "";
+            const baseUrl = "https://library.buxpxti.uz";
             const educationTypeSelect = document.getElementById("educationType");
             const facultySelect = document.getElementById("faculty");
             const subjectsSelect = document.getElementById("subjects");
@@ -1024,45 +1024,8 @@
                     return;
                 }
 
-                try {
-                    const validationResponse = await fetch("https://student.buxpxti.uz/rest/v1/account/me", {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${studentToken}`,
-                        },
-                    });
 
-                    if (validationResponse.status !== 200) {
-                        console.log("Token validation failed. Clearing token and opening login modal.");
-                        localStorage.removeItem("student_token");
-                        openLoginModal();
-                        return;
-                    }
 
-                    const response = await fetch(`${baseUrl}/api/v1/book/audio/download/${audio}`, {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${studentToken}`,
-                        },
-                    });
-
-                    if (!response.ok) {
-                        throw new Error("Failed to download audio. Please try again.");
-                    }
-
-                    const blob = await response.blob();
-                    const downloadUrl = window.URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.href = downloadUrl;
-                    link.setAttribute("download", `audio.mp3`); // Default file extension is .mp3
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
-                    window.URL.revokeObjectURL(downloadUrl);
-                } catch (error) {
-                    console.error("Error downloading audio:", error);
-                    alert("Error downloading the audio file. Please try again.");
-                }
             }
             function openLoginModal() {
                 const loginModal = new bootstrap.Modal(document.getElementById("searchModal"), {
