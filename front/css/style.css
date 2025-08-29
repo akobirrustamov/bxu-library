@@ -2,6 +2,7 @@
 .bg-image {
     background-image: url("../img/library2.jpg");
     background-repeat: no-repeat;
+    border-radius: 15px;
 }
 
 /*For backimage*/
