@@ -33,7 +33,343 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
         integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Основные улучшения дизайна */
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0a58ca;
+            --secondary: #6c757d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --bxu-blue: #1a4b8c;
+            --bxu-gold: #d4af37;
+        }
 
+        /* Общие стили */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Улучшенный верхний бар */
+        .topbar {
+            background: linear-gradient(90deg, var(--bxu-blue) 0%, #2c6db3 100%) !important;
+            padding: 8px 0;
+        }
+
+        .topbar-top {
+            align-items: center;
+        }
+
+        #note a p {
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        #note a p:hover {
+            color: var(--bxu-gold) !important;
+            transform: translateY(-2px);
+        }
+
+        .icon a i {
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: #dee2e6 !important;
+        }
+
+        .icon a:hover i {
+            color: #0d6efd(111, 111, 255) !important;
+            transform: scale(1.2);
+        }
+
+        /* Навигационная панель */
+        .navbar {
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            padding: 0;
+        }
+
+        .navbar-light .navbar-nav .nav-link {
+            color: var(--dark);
+            font-weight: 600;
+            padding: 1rem 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .navbar-light .navbar-nav .nav-link:hover,
+        .navbar-light .navbar-nav .nav-link.active {
+            color: var(--primary);
+        }
+
+        .navbar-light .navbar-nav .nav-link:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar-light .navbar-nav .nav-link:hover:after,
+        .navbar-light .navbar-nav .nav-link.active:after {
+            width: 70%;
+        }
+
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+
+        /* Герой секция */
+        .my-text {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill-opacity="0.05" fill="%23000" width="50" height="50"/><rect fill-opacity="0.05" fill="%23000" x="50" y="50" width="50" height="50"/></svg>');
+            background-size: cover;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .my-text h1 {
+            color: var(--bxu-blue);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .my-text h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--bxu-gold);
+            border-radius: 2px;
+        }
+
+        .my-text p {
+            color: #444;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Стили для выпадающих меню */
+        /* .myBgForMenuFather {
+            background-color: grey;
+            border: 2px solid #e9ecef;
+            border-radius: 8px !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            font-weight: 500;
+        }
+
+        .myBgForMenuFather:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+        .myBgForMenuFather option {
+            padding: 12px;
+        } */
+
+        /* Карточки и изображения */
+        .img-zoomin {
+            transition: transform 0.5s ease;
+            border-radius: 8px;
+        }
+
+        .img-zoomin:hover {
+            transform: scale(1.03);
+        }
+
+        .bg-light {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Секции с книгами */
+        .latest-news,
+        .populer-news {
+            background: linear-gradient(to bottom, #f9fafb, #fff);
+            padding: 4rem 0;
+        }
+
+        .latest-news h2,
+        .populer-news h4 {
+            color: var(--bxu-blue);
+            position: relative;
+            padding-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .latest-news h2:after,
+        .populer-news h4:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--bxu-gold);
+            border-radius: 2px;
+        }
+
+        /* Таблица */
+        .table th {
+            background: linear-gradient(90deg, var(--bxu-blue) 0%, #2c6db3 100%) !important;
+            color: white;
+            vertical-align: middle;
+            padding: 1rem 0.75rem;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding: 0.75rem;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(26, 75, 140, 0.05);
+        }
+
+        /* Кнопки */
+        .btn-primary {
+            background: linear-gradient(90deg, var(--bxu-blue) 0%, #2c6db3 100%);
+            border: none;
+            border-radius: 6px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #153e7a 0%, #235a9e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 75, 140, 0.3);
+        }
+
+        /* Пагинация */
+        .page-link {
+            color: var(--bxu-blue);
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin: 0 3px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover {
+            color: white;
+            background-color: var(--bxu-blue);
+            border-color: var(--bxu-blue);
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(90deg, var(--bxu-blue) 0%, #2c6db3 100%);
+            border-color: var(--bxu-blue);
+        }
+
+        /* Формы */
+        .form-control {
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+        /* Футер */
+        .footer {
+            background: linear-gradient(90deg, var(--bxu-blue) 0%, #1e5bac 100%) !important;
+            color: white;
+        }
+
+        .footer .text-secondary {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .footer .btn-light {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .footer .btn-light:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            background: rgba(0, 0, 0, 0.2) !important;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadein {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .navbar-light .navbar-nav .nav-link {
+                padding: 0.8rem 1rem;
+            }
+
+            .my-text h1 {
+                font-size: 1.8rem;
+            }
+
+            .my-text p {
+                font-size: 1rem;
+            }
+
+            .d-flex.flex-wrap.gap-4 {
+                justify-content: center !important;
+            }
+
+            .form-select {
+                width: 100% !important;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
 
 </head>
 
@@ -531,8 +867,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <span class="text-light"><a href="#"><i
-                                class="fas fa-copyright text-light me-2"></i></a>BuxPXTI</span>
+                    <span class="text-light"><a href="#"><i class="fas fa-copyright text-light me-2"></i></a>BXU</span>
                 </div>
 
             </div>
@@ -672,10 +1007,10 @@
                     <br>
                     <div class=" justify-content-between">
                         <a href="#" class="small text-body link-hover"> <i class="fa fa-user" > </i>${book.author}</a>
-                        <small class="text-body d-block"><i class="fas fa-calendar-alt me-1"></i>  ${book.publisher}</small>
+                        <small class="text-body d-block"><i class="fas fa-calendar-alt me-1"> </i>  ${book.publisher}</small>
                     </div>
                     <div class="d-flex justify-content-between">
-                                    <button  onclick="handleDownload({id: '${book.id}'})"  class="small text-body link-hover border-0 "> <i class="fa fa-download"></i>yuklab olish</button>
+                                    <button  onclick="handleDownload({id: '${book.id}'})"  class="small text-body link-hover border-0 "> <i class="fa fa-download"> </i>yuklab olish</button>
                      </div>
                 </div>
             </div>
