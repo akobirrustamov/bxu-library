@@ -1,0 +1,50 @@
+.myBgForMenu{
+    background-color: rgba(255, 255, 255, 0.80);
+
+}
+.myBold{
+    font-weight: bold;
+    font-family: "Merriweather", serif;
+    font-size: 60px;
+}
+.myBgForMenuFather{
+    background-color: rgba(20, 75, 158, 0.90);
+    border-radius: 20px;
+    color: white;
+}
+
+.my-text{
+    background-color: rgba(255, 255, 255, 0.70);
+
+}
+.card-container {
+    height: 300px; /* Set a uniform height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.card-container .card-header {
+    flex-shrink: 0; /* Prevent shrinking */
+    height: 50%; /* Adjust as needed for header content */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-container .card-body {
+    flex-grow: 1; /* Let the body grow to fill available space */
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-container .card-body a {
+    margin-bottom: auto; /* Push the link to the top */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+}
