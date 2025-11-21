@@ -32,8 +32,8 @@ public class AdminController {
     private final AudioRepo audioRepo;
     @GetMapping("/update")
     public HttpEntity<?> updateBooksList() {
-        String folderPath = "H:\\adabiyotlar"; // Adjust this path if needed
-//        String folderPath = "./fanlar"; // Adjust this path if needed
+//        String folderPath = "H:\\adabiyotlar"; // Adjust this path if needed
+        String folderPath = "./fanlar"; // Adjust this path if needed
 
         if (folderPath == null || folderPath.isEmpty()) {
             return ResponseEntity.badRequest().body("Folder path is empty or not provided.");
