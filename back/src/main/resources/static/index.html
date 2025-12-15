@@ -1646,10 +1646,10 @@
         }
       };
 
-      // Attach the login submission handler to the form
-      document
-        .getElementById("studentLoginForm")
-        ?.addEventListener("submit", handleStudentSubmit);
+      // // Attach the login submission handler to the form
+      // document
+      //   .getElementById("studentLoginForm")
+      //   ?.addEventListener("submit", handleStudentSubmit);
     </script>
 
     <!--all boks -->
@@ -1815,10 +1815,10 @@
       async function handleDownload(bookId) {
         const studentToken = localStorage.getItem("student_token");
 
-        if (!studentToken) {
-          openLoginModal();
-          return;
-        }
+        // if (!studentToken) {
+        //   openLoginModal();
+        //   return;
+        // }
 
         try {
           const response = await fetch(`${baseUrl}/api/v1/book/getFile/${bookId}`, {
@@ -1854,10 +1854,10 @@
         const studentToken = localStorage.getItem("student_token");
         console.log("Retrieved token:", studentToken);
 
-        if (!studentToken) {
-          openLoginModal();
-          return;
-        }
+        // if (!studentToken) {
+        //   openLoginModal();
+        //   return;
+        // }
 
         try {
           const validationResponse = await fetch(
@@ -1870,14 +1870,14 @@
             }
           );
 
-          if (validationResponse.status !== 200) {
-            console.log(
-              "Token validation failed. Clearing token and opening login modal."
-            );
-            localStorage.removeItem("student_token");
-            openLoginModal();
-            return;
-          }
+          // if (validationResponse.status !== 200) {
+          //   console.log(
+          //     "Token validation failed. Clearing token and opening login modal."
+          //   );
+          //   localStorage.removeItem("student_token");
+          //   openLoginModal();
+          //   return;
+          // }
           const response = await fetch(
             `${baseUrl}/api/v1/book/getFile/badiiy/${id}`,
             {
@@ -1920,9 +1920,9 @@
       }
 
       // Attach the login submission handler to the form
-      document
-        .getElementById("studentLoginForm")
-        ?.addEventListener("submit", handleStudentSubmit);
+      // document
+      //   .getElementById("studentLoginForm")
+      //   ?.addEventListener("submit", handleStudentSubmit);
     </script>
 
     <!--login -->
