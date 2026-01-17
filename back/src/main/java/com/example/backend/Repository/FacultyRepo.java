@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FacultyRepo extends JpaRepository<Faculty, Integer> {
-    @Query(value = "Select * from faculty where education_type_id=:education", nativeQuery = true)
+
+    @Query(value = "SELECT * FROM faculty WHERE education_type_id = :education", nativeQuery = true)
     List<Faculty> findAllByEducationType(Integer education);
+
     @Query(value = "SELECT * FROM faculty WHERE code = :facultyCode", nativeQuery = true)
     Optional<Faculty> findByCode(String facultyCode);
+
+    boolean existsByCode(String code);
 }

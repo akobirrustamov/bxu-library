@@ -22,6 +22,10 @@ public class Book {
     private Integer id;
 
 
+    @ManyToOne
+    private Attachment image;
+    @ManyToOne
+    private Attachment pdf;
     private String name;
 
     private String description;
@@ -39,7 +43,7 @@ public class Book {
     @JoinColumn(name = "subject_id", nullable = false) // Foreign key to Subject
     private Subject subject;
 
-    public Book(String name, String description, LocalDateTime createdAt, String author, String publisher, String genre, Subject subject, String path) {
+    public Book(String name, String description, LocalDateTime createdAt, String author, String publisher, String genre, Subject subject, String path, Attachment image, Attachment pdf) {
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;
@@ -48,5 +52,7 @@ public class Book {
         this.genre = genre;
         this.subject = subject;
         this.path = path;
+        this.image= image;
+        this.pdf = pdf;
     }
 }
