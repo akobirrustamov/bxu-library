@@ -1,0 +1,90 @@
+############################
+# OS / EDITOR
+############################
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.log
+*.swp
+*.swo
+
+############################
+# NODE / REACT (CRA + VITE)
+############################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+build/
+dist/
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+
+############################
+# TAILWIND / POSTCSS
+############################
+.postcss-cache/
+tailwind.css
+output.css
+
+############################
+# JAVA / SPRING BOOT
+############################
+target/
+out/
+bin/
+
+# Gradle
+.gradle/
+build/
+
+# Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+############################
+# SPRING BOOT ENV
+############################
+application.properties
+application.yml
+application-dev.yml
+application-prod.yml
+
+############################
+# LOGS
+############################
+logs/
+*.log
+
+############################
+# DATABASE / LOCAL FILES
+############################
+*.db
+*.sqlite
+*.h2.db
+
+############################
+# TEST / COVERAGE
+############################
+coverage/
+*.exec
+
+############################
+# DOCKER
+############################
+docker-data/
+
