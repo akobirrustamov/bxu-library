@@ -12,4 +12,17 @@ public interface SubjectRepo extends JpaRepository<Subject, Integer> {
     Optional<Subject> findByName(String name);
 
     boolean existsByName(String name);
+
+    // Jami fanlar
+    long count();
+
+    // Biriktirilmagan fanlar
+    @Query("""
+SELECT COUNT(s) FROM Subject s
+WHERE s.id NOT IN (
+    SELECT fs.subject.id FROM FacultySubject fs
+)
+""")
+    long countUnassignedSubjects();
+
 }

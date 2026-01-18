@@ -6,6 +6,7 @@ import com.example.backend.Entity.Faculty;
 import com.example.backend.Repository.EducationTypeRepo;
 import com.example.backend.Repository.FacultyRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,13 @@ public class FacultyController {
 
     private final FacultyRepo facultyRepo;
     private final EducationTypeRepo educationTypeRepo;
+
+
+
+    @GetMapping
+    public HttpEntity<?> getAllFaculties() {
+        return ResponseEntity.ok(facultyRepo.findAllByOrderByIdAsc());
+    }
 
     /* =========================
        CREATE

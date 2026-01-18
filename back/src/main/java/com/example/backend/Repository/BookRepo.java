@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookRepo extends JpaRepository<Book, Integer> {
@@ -27,4 +28,17 @@ public interface BookRepo extends JpaRepository<Book, Integer> {
             String publisher,
             Pageable pageable
     );
+
+
+    // Jami kitoblar
+    long count();
+
+    // So‘nggi 7 kun ichida qo‘shilgan kitoblar
+    @Query("SELECT COUNT(b) FROM Book b WHERE b.createdAt >= :date")
+    long countBooksAfter(LocalDateTime date);
+
+    // Fan bo‘yicha kitoblar soni
+    @Query("SELECT b.subject.id, COUNT(b) FROM Book b GROUP BY b.subject.id")
+    List<Object[]> countBooksBySubject();
+
 }

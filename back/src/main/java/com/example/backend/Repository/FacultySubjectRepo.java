@@ -12,4 +12,17 @@ public interface FacultySubjectRepo extends JpaRepository<FacultySubject, Intege
     List<FacultySubject> findAllSubjectsByFacultyId(Integer facultyId);
 
     boolean existsByFaculty_IdAndSubject_Id(Integer facultyId, Integer subjectId);
+
+    // Jami bog‘lanishlar
+    long count();
+
+    // Fakultet bo‘yicha fanlar soni
+    @Query("""
+SELECT fs.faculty.name, COUNT(fs)
+FROM FacultySubject fs
+GROUP BY fs.faculty.name
+ORDER BY COUNT(fs) DESC
+""")
+    List<Object[]> countSubjectsPerFaculty();
+
 }

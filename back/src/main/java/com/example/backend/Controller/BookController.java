@@ -132,7 +132,7 @@ public class BookController {
             @RequestParam(defaultValue = "10") int size) {
         System.out.println(title);
         Pageable pageable = PageRequest.of(page, size);
-        Page<Audio> audioBooks = audioRepo.findAllByTitleAndAuthor(title, author, pageable);
+        Page<Audio> audioBooks = audioRepo.findAllByTitleAuthorPublisher(title, author,"", pageable);
         return ResponseEntity.ok(audioBooks);
     }
 

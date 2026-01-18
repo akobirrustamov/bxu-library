@@ -25,6 +25,9 @@ public class Audio {
     private String publisher;
     private String genre;
     private String path;
+    @ManyToOne
+    private Attachment audio;
+    @ManyToOne Attachment image;
     public Audio(String name, String description, LocalDateTime createdAt, String author, String genre, String publisher, String path) {
         this.name = name;
         this.description = description;

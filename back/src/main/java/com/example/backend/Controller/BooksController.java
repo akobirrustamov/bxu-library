@@ -84,6 +84,7 @@ public class BooksController {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
 
+        System.out.print(list);
         return ResponseEntity.ok(list);
     }
 
@@ -114,7 +115,7 @@ public class BooksController {
         Book book = bookRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        return ResponseEntity.ok(toDTO(book));
+        return ResponseEntity.ok(book);
     }
 
     /* =========================

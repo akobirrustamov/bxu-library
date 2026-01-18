@@ -25,6 +25,9 @@ public class Badiiy {
     private String publisher;
     private String genre;
     private String path;
+    @ManyToOne
+    private Attachment pdf;
+    @ManyToOne Attachment image;
     public Badiiy(String name, String description, LocalDateTime createdAt, String author, String genre, String publisher, String path) {
         this.name = name;
         this.description = description;

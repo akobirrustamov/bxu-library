@@ -16,4 +16,14 @@ public interface FacultyRepo extends JpaRepository<Faculty, Integer> {
     Optional<Faculty> findByCode(String facultyCode);
 
     boolean existsByCode(String code);
+
+    // Jami fakultetlar
+    long count();
+
+    // Ta’lim turi bo‘yicha fakultetlar
+    @Query("SELECT f.educationType.name, COUNT(f) FROM Faculty f GROUP BY f.educationType.name")
+    List<Object[]> countByEducationType();
+
+    List<Faculty> findAllByOrderByIdAsc();
+
 }
