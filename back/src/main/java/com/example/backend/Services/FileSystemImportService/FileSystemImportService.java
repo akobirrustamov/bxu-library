@@ -20,6 +20,8 @@ public class FileSystemImportService {
     private final AttachmentRepo attachmentRepo;
 
     private static final String ROOT = "./fanlar";
+//    String ROOT = System.getProperty("user.home") + "/Desktop/fanlar";
+
     private static final String STORAGE_ROOT = "backend/files";
 
     public void importBooksFromFanlar() throws IOException {
@@ -79,7 +81,7 @@ public class FileSystemImportService {
     private Attachment saveFileAsAttachment(File source, String prefix) throws IOException {
 
         UUID id = UUID.randomUUID();
-        String storedName = id + "_" + source.getName();
+        String storedName = source.getName();
         File target = new File(STORAGE_ROOT + prefix + "/" + storedName);
 
         target.getParentFile().mkdirs();

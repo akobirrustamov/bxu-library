@@ -20,7 +20,7 @@ import java.util.Objects;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/admin-akobir")
 public class OldAdminController {
 
     private final BookRepo bookRepo;
