@@ -29,6 +29,9 @@ const AdminBooks = () => {
     const [loading, setLoading] = useState(true);
     const [uploadProgress, setUploadProgress] = useState({ pdf: 0, image: 0 });
     const [selectedSubject, setSelectedSubject] = useState(null);
+    const [libraryModalOpen, setLibraryModalOpen] = useState(false);
+    const [selectedBook, setSelectedBook] = useState(null);
+    const [libraryCount, setLibraryCount] = useState(0);
 
     const [openModal, setOpenModal] = useState(false);
     const [editId, setEditId] = useState(null);
@@ -260,6 +263,20 @@ const AdminBooks = () => {
 
     const stats = getStats();
 
+    const updateLibraryCount = async () => {
+        try {
+            await ApiCall(
+                `/api/v1/books/library/${selectedBook.id}/${libraryCount}`,
+                "PUT"
+            );
+            setLibraryModalOpen(false);
+            loadBooks(); // jadvalni yangilash
+        } catch (e) {
+            console.error(e);
+            alert("Saqlashda xatolik");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
             <Sidebar />
@@ -387,6 +404,9 @@ const AdminBooks = () => {
                                         <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                                         <tr>
                                             <th className="py-4 px-6 text-left text-gray-700 font-semibold">Kitob nomi</th>
+                                            <th className="py-4 px-6 text-left text-gray-700 font-semibold">
+                                                Kutubxona
+                                            </th>
                                             <th className="py-4 px-6 text-left text-gray-700 font-semibold">Muallif</th>
                                             <th className="py-4 px-6 text-left text-gray-700 font-semibold">Fan</th>
                                             <th className="py-4 px-6 text-left text-gray-700 font-semibold">Nashriyot</th>
@@ -405,6 +425,24 @@ const AdminBooks = () => {
                                                         </div>
                                                     </div>
                                                 </td>
+                                                <td className="py-4 px-6">
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedBook(book);
+                                                            setLibraryCount(book.libraryCount || 0);
+                                                            setLibraryModalOpen(true);
+                                                        }}
+                                                        className={`
+            px-3 py-1 rounded-full text-sm font-semibold
+            ${book.isHaveLibrary
+                                                            ? "bg-green-100 text-green-700"
+                                                            : "bg-red-100 text-red-700"}
+        `}
+                                                    >
+                                                        {book.isHaveLibrary ? book.libraryCount : "Yo‘q"}
+                                                    </button>
+                                                </td>
+
                                                 <td className="py-4 px-6">
                                                     <div className="font-medium text-gray-900">{book.author || "Noma'lum"}</div>
                                                 </td>
@@ -727,6 +765,44 @@ const AdminBooks = () => {
                     </div>
                 </div>
             )}
+
+            {libraryModalOpen && selectedBook && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+                        <h2 className="text-xl font-bold mb-4">
+                            Kutubxona sonini o‘zgartirish
+                        </h2>
+
+                        <p className="text-gray-600 mb-2">
+                            <b>{selectedBook.name}</b>
+                        </p>
+
+                        <input
+                            type="number"
+                            min="0"
+                            value={libraryCount}
+                            onChange={(e) => setLibraryCount(Number(e.target.value))}
+                            className="w-full px-4 py-3 border rounded-xl mb-4"
+                        />
+
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setLibraryModalOpen(false)}
+                                className="px-4 py-2 border rounded-xl"
+                            >
+                                Bekor
+                            </button>
+                            <button
+                                onClick={updateLibraryCount}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-xl"
+                            >
+                                Saqlash
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

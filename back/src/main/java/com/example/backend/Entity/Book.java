@@ -38,6 +38,8 @@ public class Book {
 
     private String genre;
     private String path;
+    private Boolean isHaveLibrary;
+    private Integer libraryCount;
 
     @ManyToOne
     @JoinColumn(name = "subject_id", nullable = false) // Foreign key to Subject

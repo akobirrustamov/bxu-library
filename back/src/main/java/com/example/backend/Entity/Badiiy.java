@@ -25,6 +25,8 @@ public class Badiiy {
     private String publisher;
     private String genre;
     private String path;
+    private Boolean isHaveLibrary;
+    private Integer libraryCount;
     @ManyToOne
     private Attachment pdf;
     @ManyToOne Attachment image;

@@ -27,6 +27,7 @@ public class BookDTO {
 
     private UUID imageId;
     private UUID pdfId;
-
+    private Boolean isHaveLibrary;
+    private Integer libraryCount;
     private LocalDateTime createdAt;
 }

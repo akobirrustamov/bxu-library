@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
-import ApiCall from "../config";
+import ApiCall, {baseUrl} from "../config";
 import {
     FiBook,
     FiUsers,
@@ -178,6 +178,46 @@ function AdminHome() {
         </div>
     );
 
+    async function downloadHisobot() {
+        setLoading(true);
+        try {
+            const response = await fetch(
+                `${baseUrl}/api/v1/books/hisobot`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, // agar auth bo‘lsa
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Excel yuklab bo‘lmadi");
+            }
+
+            const blob = await response.blob();
+
+            // 🔽 Fayl yaratamiz
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "books_report.xlsx";
+            document.body.appendChild(a);
+            a.click();
+
+            // tozalash
+            a.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error("Error downloading excel:", error);
+            alert("Hisobotni yuklab bo‘lmadi");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 relative overflow-hidden">
             {/* Animated Background */}
@@ -293,7 +333,13 @@ function AdminHome() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <div>
+                            <button onClick={()=>downloadHisobot()} className={"p-4 bg-blue-700 rounded-2xl text-white"}>
+                                Hisobot yuklab olish
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
                             {[
                                 { icon: <FiBook />, label: "Yangi Kitob", desc: "Elektron kitob qo'shish", color: "blue", link: "/admin/books" },
                                 { icon: <FiUsers />, label: "Yangi Fakultet", desc: "Fakultet yaratish", color: "green", link: "/admin/faculty" },

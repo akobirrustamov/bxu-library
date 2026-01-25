@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookRepo extends JpaRepository<Book, Integer> {
 
@@ -40,5 +41,8 @@ public interface BookRepo extends JpaRepository<Book, Integer> {
     // Fan bo‘yicha kitoblar soni
     @Query("SELECT b.subject.id, COUNT(b) FROM Book b GROUP BY b.subject.id")
     List<Object[]> countBooksBySubject();
+
+    @Query("select b from Book b order by b.createdAt desc")
+    List<Book> findAllOrderByCreatedAt();
 
 }

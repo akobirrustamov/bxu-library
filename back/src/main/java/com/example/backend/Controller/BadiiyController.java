@@ -3,6 +3,7 @@ package com.example.backend.Controller;
 import com.example.backend.DTO.BadiiyDTO;
 import com.example.backend.Entity.Attachment;
 import com.example.backend.Entity.Badiiy;
+import com.example.backend.Entity.Book;
 import com.example.backend.Repository.AttachmentRepo;
 import com.example.backend.Repository.BadiiyRepo;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -171,5 +173,21 @@ public class BadiiyController {
                 .pdfId(b.getPdf() != null ? b.getPdf().getId() : null)
                 .imageId(b.getImage() != null ? b.getImage().getId() : null)
                 .build();
+    }
+
+    @PutMapping("/library/{id}/{count}")
+    public HttpEntity<?> putBookInLibrary(@PathVariable Integer id, @PathVariable Integer count){
+        Optional<Badiiy> byId = badiiyRepo.findById(id);
+        if (byId.isEmpty())return ResponseEntity.notFound().build();
+        Badiiy book = byId.get();
+        if(count==0){
+            book.setIsHaveLibrary(false);
+            book.setLibraryCount(0);
+        }else {
+            book.setIsHaveLibrary(true);
+            book.setLibraryCount(count);
+        }
+        Badiiy save = badiiyRepo.save(book);
+        return ResponseEntity.ok(save);
     }
 }

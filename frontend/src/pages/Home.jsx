@@ -51,9 +51,9 @@ function Home() {
                 handleSubjectChange={handleSubjectChange}
             />
             <BooksGrid books={books} handleDownload={handleDownload} />
-            <BadiiyBooks books={badiiyBooks} handleDownload={handleDownload} />
-            <AudioBooks books={audioBooks} handleDownload={handleDownload} />
-            <BooksTable books={allBooks} handleDownload={handleDownload} />
+            {/*<BadiiyBooks books={badiiyBooks} handleDownload={handleDownload} />*/}
+            {/*<AudioBooks books={audioBooks} handleDownload={handleDownload} />*/}
+            {/*<BooksTable books={allBooks} handleDownload={handleDownload} />*/}
             <Footer />
             <LoginModal
                 show={showLogin}

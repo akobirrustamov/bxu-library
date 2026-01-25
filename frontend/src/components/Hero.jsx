@@ -299,7 +299,7 @@ const Hero = () => {
                             <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6 sm:my-8"></div>
 
                             {/* Searchable selects section */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className=" grid-cols-1 md:grid-cols-3 gap-4 hidden">
                                 <SearchableSelect
                                     label="Ta'lim turini tanlang"
                                     value={educationId}
