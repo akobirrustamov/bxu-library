@@ -7,10 +7,13 @@ import AdminBooks from "./admin/Books";
 import AdminSubject from "./admin/AdminSubject";
 import AdminFaculty from "./admin/AdminFaculty";
 import AdminFacultySubject from "./admin/AdminFacultySubject";
+import AdminFacultyDetails from "./admin/AdminFacultyDetails"
 import AdminBadiiy from "./admin/AdminBadiiy";
 import AdminAudio from "./admin/AdminAudio";
 import OneBook from "./pages/OneBook";
 import OneBadiiy from "./pages/OneBadiiy";
+import AdminSubjectBooks from "./admin/AdminSubjectBooks";
+
 function App() {
     return (
         <Routes>
@@ -27,8 +30,11 @@ function App() {
             <Route path="/admin/subjects" element={<AdminSubject />} />
 
             <Route path="/admin/faculty-subjects" element={<AdminFacultySubject />} />
+                <Route path="/admin/faculty-statistic/:facultyId" element={<AdminFacultyDetails />} />
 
-            <Route path="/admin/badiiy" element={<AdminBadiiy />} />
+                <Route path="/admin/subject/:subjectId" element={<AdminSubjectBooks />} />
+
+                <Route path="/admin/badiiy" element={<AdminBadiiy />} />
             <Route path="/admin/audio" element={<AdminAudio />} />
             {/* Redirect */}
             <Route path="/admin" element={<Navigate to="/admin/login" replace />} />

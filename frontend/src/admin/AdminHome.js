@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
+
 import ApiCall, {baseUrl} from "../config";
 import {
     FiBook,
@@ -23,13 +24,15 @@ import {
     FiAward
 } from "react-icons/fi";
 import { FaGraduationCap, FaBookReader, FaUniversity, FaChartLine } from "react-icons/fa";
+import {useNavigate} from "react-router-dom";
 
 function AdminHome() {
     const [isVisible, setIsVisible] = useState(false);
     const [textIndex, setTextIndex] = useState(0);
     const [displayText, setDisplayText] = useState("");
     const fullText = "Admin Paneliga xush kelibsiz!";
-
+    const [eduFacultyStats, setEduFacultyStats] = useState([]);
+    const navigate = useNavigate()
     const [stats, setStats] = useState({
         booksCount: 0,
         facultiesCount: 0,
@@ -41,12 +44,7 @@ function AdminHome() {
         subjectsPerFaculty: [],
     });
 
-    const [recentActivities, setRecentActivities] = useState([
-        { id: 1, user: "Admin", action: "Kitob qo'shdi", item: "Dasturlash Asoslari", time: "5 min oldin", color: "blue" },
-        { id: 2, user: "Admin", action: "Fan biriktirdi", item: "Matematik Analiz", time: "1 soat oldin", color: "green" },
-        { id: 3, user: "Admin", action: "Fakultet yangiladi", item: "Kompyuter injiniringi", time: "3 soat oldin", color: "purple" },
-        { id: 4, user: "Admin", action: "Statistikani yangiladi", item: "Dashboard", time: "1 kun oldin", color: "orange" },
-    ]);
+
 
     const [loading, setLoading] = useState(true);
     const [cardAnimations, setCardAnimations] = useState([false, false, false, false]);
@@ -102,6 +100,17 @@ function AdminHome() {
             })
             .finally(() => {
                 setTimeout(() => setLoading(false), 1000);
+            });
+    }, []);
+    useEffect(() => {
+        ApiCall("/api/v1/statistic/education-type-faculty-stats", "GET")
+            .then(res => {
+                if (!res?.error) {
+                    setEduFacultyStats(res.data);
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching education-type stats", err);
             });
     }, []);
 
@@ -316,100 +325,162 @@ function AdminHome() {
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    {/* Quick Actions */}
-                    <div className={`
-            lg:col-span-2 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-6
-            transition-all duration-700 delay-200
-            ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
-            border border-white/20
-          `}>
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
-                                <FiGrid className="text-white text-xl" />
+
+
+
+
+
+
+                    <div className={` lg:col-span-3
+                            bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-6
+                            transition-all duration-700 delay-400
+                            ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+                            border border-white/20
+                          `}>
+                        <div className="flex items-center justify-between mb-6">
+
+
+
+                            <div className="space-y-6">
+                                {eduFacultyStats.map((edu, idx) => (
+                                    <div key={idx}
+
+                                         className="border rounded-xl p-4 bg-gray-50">
+                                        {/* Education Type */}
+                                        <h3 className="text-lg font-bold text-indigo-700 mb-4 flex items-center gap-2">
+                                            <FaGraduationCap />
+                                            {edu.educationTypeName}
+                                        </h3>
+
+                                        {/* Faculties */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {edu.faculties.map((fac) => (
+                                                <div
+                                                    key={fac.facultyId}
+                                                    onClick={() => navigate(`/admin/faculty-statistic/${fac.facultyId}`)}
+                                                    className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition cursor-pointer"
+                                                >
+                                                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                                        <FaUniversity className="text-blue-600" />
+                                                        {fac.facultyName}
+                                                    </h4>
+
+                                                    <div className="grid grid-cols-3 gap-3 text-center">
+                                                        <div className="bg-blue-50 rounded-lg p-2">
+                                                            <p className="text-sm text-gray-500">Fanlar</p>
+                                                            <p className="text-xl font-bold text-blue-700">
+                                                                {fac.subjectsCount}
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="bg-green-50 rounded-lg p-2">
+                                                            <p className="text-sm text-gray-500">Elektron Kitoblar</p>
+                                                            <p className="text-xl font-bold text-green-700">
+                                                                {fac.booksCount}
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="bg-purple-50 rounded-lg p-2">
+                                                            <p className="text-sm text-gray-500">Kutubxonada mavjud</p>
+                                                            <p className="text-xl font-bold text-purple-700">
+                                                                {fac.libraryCountTotal}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                            <div>
-                                <h2 className="text-xl font-semibold text-gray-900">Tezkor Amallar</h2>
-                                <p className="text-gray-600 text-sm mt-1">Tizimni tez boshqarish</p>
-                            </div>
+
+
+
                         </div>
 
 
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+                {/* Quick Actions */}
+                <div className={`mb-4
+                                bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-6
+                                transition-all duration-700 delay-200
+                                ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+                                border border-white/20
+                              `}>
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg">
+                            <FiGrid className="text-white text-xl" />
+                        </div>
                         <div>
-                            <button onClick={()=>downloadHisobot()} className={"p-4 bg-blue-700 rounded-2xl text-white"}>
-                                Hisobot yuklab olish
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-1 my-4 md:grid-cols-2 gap-4">
-                            {[
-                                { icon: <FiBook />, label: "Yangi Kitob", desc: "Elektron kitob qo'shish", color: "blue", link: "/admin/books" },
-                                { icon: <FiUsers />, label: "Yangi Fakultet", desc: "Fakultet yaratish", color: "green", link: "/admin/faculty" },
-                                { icon: <FiFileText />, label: "Yangi Fan", desc: "Fan yaratish", color: "purple", link: "/admin/subjects" },
-                                { icon: <FiLink />, label: "Fan Biriktirish", desc: "Fakultetga fan biriktirish", color: "orange", link: "/admin/faculty-subjects" },
-                            ].map((action, index) => (
-                                <a
-                                    key={index}
-                                    href={action.link}
-                                    className={`
-                    flex items-center gap-4 p-4 
-                    bg-${action.color}-50 hover:bg-${action.color}-100 
-                    text-${action.color}-700 rounded-xl transition-all duration-300
-                    transform hover:-translate-y-0.5 hover:shadow-lg
-                    ${cardAnimations[0] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}
-                    delay-${index * 100}
-                    group
-                  `}
-                                >
-                                    <div className={`
-                    p-3 bg-${action.color}-100 rounded-lg
-                    transform transition-transform duration-300 group-hover:scale-110
-                  `}>
-                                        {action.icon}
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="font-semibold">{action.label}</p>
-                                        <p className="text-sm opacity-75">{action.desc}</p>
-                                    </div>
-                                    <FiChevronRight className="ml-auto opacity-0 group-hover:opacity-100 transition" />
-                                </a>
-                            ))}
+                            <h2 className="text-xl font-semibold text-gray-900">Tezkor Amallar</h2>
+                            <p className="text-gray-600 text-sm mt-1">Tizimni tez boshqarish</p>
                         </div>
                     </div>
 
-                    {/* Recent Activities */}
-                    <div className={`
-            bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg p-6
-            transition-all duration-700 delay-400
-            ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
-            border border-white/20
-          `}>
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg">
-                                    <FiActivity className="text-white text-xl" />
-                                </div>
-                                <div>
-                                    <h2 className="text-xl font-semibold text-gray-900">So'nggi Faoliyatlar</h2>
-                                    <p className="text-gray-600 text-sm mt-1">Tizimdagi o'zgarishlar</p>
-                                </div>
-                            </div>
-                            <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
-                                <FiFilter /> Filter
-                            </button>
-                        </div>
 
-                        <div className="space-y-3">
-                            {recentActivities.map((activity, index) => (
-                                <ActivityItem key={activity.id} activity={activity} index={index} />
-                            ))}
-                        </div>
-
-                        <div className="mt-6 pt-4 border-t border-gray-100">
-                            <a href="#" className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
-                                Barcha faoliyatlar <FiChevronRight />
+                    <div>
+                        <button onClick={()=>downloadHisobot()} className={"p-4 bg-blue-700 rounded-2xl text-white"}>
+                            Hisobot yuklab olish
+                        </button>
+                    </div>
+                    <div className="grid grid-cols-1 my-4 md:grid-cols-4 gap-4">
+                        {[
+                            { icon: <FiBook />, label: "Yangi Kitob", desc: "Elektron kitob qo'shish", color: "blue", link: "/admin/books" },
+                            { icon: <FiUsers />, label: "Yangi Fakultet", desc: "Fakultet yaratish", color: "green", link: "/admin/faculty" },
+                            { icon: <FiFileText />, label: "Yangi Fan", desc: "Fan yaratish", color: "purple", link: "/admin/subjects" },
+                            { icon: <FiLink />, label: "Fan Biriktirish", desc: "Fakultetga fan biriktirish", color: "orange", link: "/admin/faculty-subjects" },
+                        ].map((action, index) => (
+                            <a
+                                key={index}
+                                href={action.link}
+                                className={`
+                                            flex items-center gap-4 p-4 
+                                            bg-${action.color}-50 hover:bg-${action.color}-100 
+                                            text-${action.color}-700 rounded-xl transition-all duration-300
+                                            transform hover:-translate-y-0.5 hover:shadow-lg
+                                            ${cardAnimations[0] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}
+                                            delay-${index * 100}
+                                            group
+                                          `}
+                            >
+                                <div className={`
+                                                p-3 bg-${action.color}-100 rounded-lg
+                                                transform transition-transform duration-300 group-hover:scale-110
+                                              `}>
+                                    {action.icon}
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-semibold">{action.label}</p>
+                                    <p className="text-sm opacity-75">{action.desc}</p>
+                                </div>
+                                <FiChevronRight className="ml-auto opacity-0 group-hover:opacity-100 transition" />
                             </a>
-                        </div>
+                        ))}
                     </div>
                 </div>
+
+
+
 
                 {/* Analytics Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

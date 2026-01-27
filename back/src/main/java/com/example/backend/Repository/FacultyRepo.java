@@ -26,4 +26,10 @@ public interface FacultyRepo extends JpaRepository<Faculty, Integer> {
 
     List<Faculty> findAllByOrderByIdAsc();
 
+    @Query("""
+        SELECT f.id, f.name, et.id, et.name
+        FROM Faculty f
+        JOIN f.educationType et
+    """)
+    List<Object[]> findFacultiesWithEducationType();
 }

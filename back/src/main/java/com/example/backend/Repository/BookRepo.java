@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,5 +45,28 @@ public interface BookRepo extends JpaRepository<Book, Integer> {
 
     @Query("select b from Book b order by b.createdAt desc")
     List<Book> findAllOrderByCreatedAt();
+
+
+    @Query("""
+        SELECT fs.faculty.id,
+               COUNT(b.id),
+               COALESCE(SUM(b.libraryCount), 0)
+        FROM Book b
+        JOIN FacultySubject fs ON fs.subject.id = b.subject.id
+        GROUP BY fs.faculty.id
+    """)
+    List<Object[]> countBooksAndLibraryByFaculty();
+
+
+
+    @Query("""
+        SELECT b.subject.id,
+               COUNT(b.id),
+               COALESCE(SUM(b.libraryCount), 0)
+        FROM Book b
+        WHERE b.subject.id IN :subjectIds
+        GROUP BY b.subject.id
+    """)
+    List<Object[]> countBooksBySubjectIds(@Param("subjectIds") List<Integer> subjectIds);
 
 }
