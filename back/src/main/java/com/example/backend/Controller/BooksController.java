@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,6 +79,18 @@ public class BooksController {
     }
 
 
+
+    @GetMapping
+    public ResponseEntity<Page<Book>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size   // 👈 default 20
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Book> result = bookRepo.findAll(pageable);
+
+        return ResponseEntity.ok(result);
+    }
 
     /* =========================
        READ BY SUBJECT

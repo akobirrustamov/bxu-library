@@ -23,8 +23,9 @@ import {
     FiDatabase,
     FiAward
 } from "react-icons/fi";
-import { FaGraduationCap, FaBookReader, FaUniversity, FaChartLine } from "react-icons/fa";
+import {FaGraduationCap, FaBookReader, FaUniversity, FaChartLine, FaFileAudio} from "react-icons/fa";
 import {useNavigate} from "react-router-dom";
+import {FaBookAtlas, FaBookBible} from "react-icons/fa6";
 
 function AdminHome() {
     const [isVisible, setIsVisible] = useState(false);
@@ -93,6 +94,7 @@ function AdminHome() {
             .then((res) => {
                 if (!res?.error) {
                     setStats(res.data);
+                    console.log(res.data)
                 }
             })
             .catch((error) => {
@@ -319,6 +321,31 @@ function AdminHome() {
                         icon={<FaUniversity />}
                         color="bg-orange-500"
                         trend={stats.facultiesByEducationType?.length || 0}
+                        delay={3}
+                    />
+                    <StatCard
+                        title="Kutubxonadagi kitoblar soni"
+                        value={stats?.booksLibraryCount}
+                        icon={<FaBookReader />}
+                        color="bg-orange-500"
+                        trend={stats.booksLibraryCount?.length || 0}
+                        delay={3}
+                    />
+                    <StatCard
+                        title="Badiiy kitoblar soni"
+                        value={stats?.badiiyCount}
+                        icon={<FaBookAtlas />}
+                        color="bg-orange-500"
+                        trend={stats.badiiyCount?.length || 0}
+                        delay={3}
+                    />
+
+                    <StatCard
+                        title="Audio kitoblar soni"
+                        value={stats?.audioCount}
+                        icon={<FaFileAudio />}
+                        color="bg-orange-500"
+                        trend={stats.audioCount?.length || 0}
                         delay={3}
                     />
                 </div>

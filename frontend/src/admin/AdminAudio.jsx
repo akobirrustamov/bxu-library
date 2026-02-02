@@ -4,8 +4,6 @@ import ApiCall, { baseUrl } from "../config";
 import {
     FiMusic,
     FiPlus,
-    FiEdit,
-    FiTrash,
     FiDownload,
     FiHeadphones,
     FiUser,
@@ -19,13 +17,25 @@ import {
     FiX,
     FiImage,
     FiVolume2,
-    FiVolumeX
+    FiVolumeX,
+    FiChevronLeft,
+    FiChevronRight,
+    FiSearch
 } from "react-icons/fi";
 import bookImg from "../assets/newbook.jpg";
 
 const AdminAudio = () => {
     const [audios, setAudios] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize] = useState(8); // Items per page
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalElements, setTotalElements] = useState(0);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    // Audio player state
     const [currentAudio, setCurrentAudio] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -66,22 +76,31 @@ const AdminAudio = () => {
     }, [volume, isMuted]);
 
     /* =========================
-       FETCH AUDIOS
+       FETCH AUDIOS WITH PAGINATION
     ========================= */
     useEffect(() => {
         fetchAudios();
-    }, []);
+    }, [currentPage, searchTerm]);
 
     const fetchAudios = async () => {
         setLoading(true);
         try {
-            const res = await ApiCall("/api/v1/book/audio", "GET", null, {
-                page: 0,
-                size: 100
-            });
+            const params = {
+                page: currentPage,
+                size: pageSize,
+            };
+
+            // Add search parameter if search term exists
+            if (searchTerm.trim()) {
+                params.search = searchTerm.trim();
+            }
+
+            const res = await ApiCall("/api/v1/book/audio", "GET", null, params);
+
             if (!res?.error) {
+                const content = res.data?.content || [];
                 const audiosWithMetadata = await Promise.all(
-                    (res.data?.content || []).map(async (audio) => {
+                    content.map(async (audio) => {
                         if (audio.audio?.id) {
                             try {
                                 const metadata = await getAudioMetadata(audio.audio.id);
@@ -95,9 +114,18 @@ const AdminAudio = () => {
                     })
                 );
                 setAudios(audiosWithMetadata);
+                setTotalPages(res.data?.totalPages || 0);
+                setTotalElements(res.data?.totalElements || 0);
+            } else {
+                setAudios([]);
+                setTotalPages(0);
+                setTotalElements(0);
             }
         } catch (error) {
             console.error("Error fetching audios:", error);
+            setAudios([]);
+            setTotalPages(0);
+            setTotalElements(0);
         } finally {
             setLoading(false);
         }
@@ -233,6 +261,43 @@ const AdminAudio = () => {
         if (audioRef.current) {
             audioRef.current.muted = !isMuted;
         }
+    };
+
+    /* =========================
+       PAGINATION CONTROLS
+    ========================= */
+    const handlePageChange = (page) => {
+        if (page >= 0 && page < totalPages) {
+            setCurrentPage(page);
+            // Scroll to top when changing pages
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const getPageNumbers = () => {
+        const pages = [];
+        const maxVisiblePages = 5;
+
+        if (totalPages <= maxVisiblePages) {
+            // Show all pages
+            for (let i = 0; i < totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            // Show limited pages with ellipsis
+            let start = Math.max(0, currentPage - 2);
+            let end = Math.min(totalPages, start + maxVisiblePages);
+
+            if (end - start < maxVisiblePages) {
+                start = Math.max(0, end - maxVisiblePages);
+            }
+
+            for (let i = start; i < end; i++) {
+                pages.push(i);
+            }
+        }
+
+        return pages;
     };
 
     /* =========================
@@ -419,6 +484,15 @@ const AdminAudio = () => {
     };
 
     /* =========================
+       SEARCH HANDLER
+    ========================= */
+    const handleSearch = (e) => {
+        e.preventDefault();
+        setCurrentPage(0); // Reset to first page when searching
+        fetchAudios();
+    };
+
+    /* =========================
        RENDER
     ========================= */
     return (
@@ -442,159 +516,274 @@ const AdminAudio = () => {
                     </button>
                 </div>
 
+                {/* Search Bar */}
+                <div className="mb-6">
+                    <form onSubmit={handleSearch} className="max-w-md">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Audiolarni qidirish..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full px-4 py-3 pl-12 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm"
+                            />
+                            <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <button
+                                type="submit"
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                            >
+                                Qidirish
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
+                {/* Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-white p-4 rounded-xl shadow border">
+                        <div className="text-sm text-gray-600">Jami Audiolar</div>
+                        <div className="text-2xl font-bold text-blue-600">{totalElements}</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl shadow border">
+                        <div className="text-sm text-gray-600">Jami Sahifalar</div>
+                        <div className="text-2xl font-bold text-green-600">{totalPages}</div>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl shadow border">
+                        <div className="text-sm text-gray-600">Har bir sahifada</div>
+                        <div className="text-2xl font-bold text-purple-600">{pageSize} ta</div>
+                    </div>
+                </div>
 
                 {/* Audio Grid */}
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {audios.map((audio) => {
-                            const isCurrentAudio = currentAudio?.id === audio.id;
-                            const audioDuration = audio.duration || duration;
-                            const audioSize = audio.size || 0;
-                            const audioProgress = isCurrentAudio ? progress : 0;
-                            const audioCurrentTime = isCurrentAudio ? currentTime : 0;
-                            const image = audio.image ? (
-                                <img
-                                    src={`${baseUrl}/api/v1/file/img/${audio.image.id}`}
-                                    alt={audio.name}
-                                    className="w-16 h-16 object-cover rounded-2xl shadow"
-                                />
-                            ) : (
-                                <FiHeadphones className="text-white text-2xl" />
-                            );
-
-                            return (
-                                <div
-                                    key={audio.id}
-                                    className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 border border-gray-100 overflow-hidden"
-                                >
-                                    {/* Audio Header */}
-                                    <div className="relative p-6 bg-gradient-to-r from-blue-50 to-purple-50">
-                                        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-
-                                            {image}
-                                        </div>
-
-                                        {/* Badges */}
-                                        <div className="absolute top-3 right-3 flex gap-2">
-                                            {audio.audio?.id && (
-                                                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                          Audio
-                        </span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Audio Content */}
-                                    <div className="p-6">
-                                        <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
-                                            {audio.name}
-                                        </h3>
-
-                                        {audio.author && (
-                                            <div className="flex items-center gap-2 text-gray-700 mb-3">
-                                                <FiUser className="w-4 h-4 text-gray-400" />
-                                                <span className="text-sm font-medium">{audio.author}</span>
-                                            </div>
-                                        )}
-
-                                        {audio.description && (
-                                            <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                                                {audio.description}
-                                            </p>
-                                        )}
-
-                                        {/* Audio Info */}
-                                        <div className="flex items-center justify-between mb-6 text-sm text-gray-600">
-                                            <div className="flex items-center gap-2">
-                                                <FiClock className="w-4 h-4" />
-                                                <span>{formatDuration(audioDuration)}</span>
-                                            </div>
-                                            {audioSize > 0 && (
-                                                <div className="flex items-center gap-2">
-                                                    <FiDatabase className="w-4 h-4" />
-                                                    <span>{formatFileSize(audioSize)}</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Audio Player */}
-                                        <div className="mb-6">
-                                            <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs text-gray-500">
-                          {formatTime(audioCurrentTime)} / {formatDuration(audioDuration)}
-                        </span>
-                                            </div>
-
-                                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
-                                                <div
-                                                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300"
-                                                    style={{ width: `${audioProgress}%` }}
-                                                />
-                                            </div>
-
-                                            <div className="flex items-center justify-center gap-4">
-                                                <button
-                                                    onClick={() => playAudio(audio)}
-                                                    className={`p-3 rounded-full ${
-                                                        isCurrentAudio && isPlaying
-                                                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                    }`}
-                                                >
-                                                    {isCurrentAudio && isPlaying ? <FiPause /> : <FiPlay />}
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        {/* Action Buttons */}
-                                        <div className="flex gap-2 pt-4 border-t border-gray-100">
-                                            {audio.audio?.id ? (
-                                                <button
-                                                    onClick={() => handleDownload(audio.audio.id, audio.name)}
-                                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-xl hover:from-green-600 hover:to-green-700 transition"
-                                                >
-                                                    <FiDownload />
-                                                    Yuklab olish
-                                                </button>
-                                            ) : (
-                                                <div className="flex-1 text-center px-4 py-3 bg-gray-100 text-gray-500 rounded-xl text-sm">
-                                                    Audio mavjud emas
-                                                </div>
-                                            )}
-
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setEditId(audio.id);
-                                                        setForm({
-                                                            ...audio,
-                                                            audioId: audio.audio?.id,
-                                                            imageId: audio.image?.id
-                                                        });
-                                                        setOpenModal(true);
-                                                    }}
-                                                    className="p-3 bg-yellow-50 text-yellow-600 rounded-xl hover:bg-yellow-100 transition"
-                                                >
-                                                    <FiEdit2 />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(audio.id, audio.name)}
-                                                    className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition"
-                                                >
-                                                    <FiTrash2 />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                ) : audios.length === 0 ? (
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 text-6xl mb-4">🎵</div>
+                        <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                            {searchTerm ? "Qidiruv natijasi topilmadi" : "Audiolar topilmadi"}
+                        </h3>
+                        <p className="text-gray-500 mb-4">
+                            {searchTerm
+                                ? `"${searchTerm}" bo'yicha natija topilmadi`
+                                : "Hozircha hech qanday audio mavjud emas"
+                            }
+                        </p>
+                        {!searchTerm && (
+                            <button
+                                onClick={() => setOpenModal(true)}
+                                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                <FiPlus className="inline mr-2" />
+                                Birinchi audioni qo'shing
+                            </button>
+                        )}
                     </div>
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                            {audios.map((audio) => {
+                                const isCurrentAudio = currentAudio?.id === audio.id;
+                                const audioDuration = audio.duration || duration;
+                                const audioSize = audio.size || 0;
+                                const audioProgress = isCurrentAudio ? progress : 0;
+                                const audioCurrentTime = isCurrentAudio ? currentTime : 0;
+                                const image = audio.image ? (
+                                    <img
+                                        src={`${baseUrl}/api/v1/file/img/${audio.image.id}`}
+                                        alt={audio.name}
+                                        className="w-16 h-16 object-cover rounded-2xl shadow"
+                                    />
+                                ) : (
+                                    <FiHeadphones className="text-white text-2xl" />
+                                );
+
+                                return (
+                                    <div
+                                        key={audio.id}
+                                        className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 border border-gray-100 overflow-hidden"
+                                    >
+                                        {/* Audio Header */}
+                                        <div className="relative p-6 bg-gradient-to-r from-blue-50 to-purple-50">
+                                            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                                {image}
+                                            </div>
+
+                                            {/* Badges */}
+                                            <div className="absolute top-3 right-3 flex gap-2">
+                                                {audio.audio?.id && (
+                                                    <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                                                        Audio
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Audio Content */}
+                                        <div className="p-6">
+                                            <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+                                                {audio.name}
+                                            </h3>
+
+                                            {audio.author && (
+                                                <div className="flex items-center gap-2 text-gray-700 mb-3">
+                                                    <FiUser className="w-4 h-4 text-gray-400" />
+                                                    <span className="text-sm font-medium">{audio.author}</span>
+                                                </div>
+                                            )}
+
+                                            {audio.description && (
+                                                <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                                                    {audio.description}
+                                                </p>
+                                            )}
+
+                                            {/* Audio Info */}
+                                            <div className="flex items-center justify-between mb-6 text-sm text-gray-600">
+                                                <div className="flex items-center gap-2">
+                                                    <FiClock className="w-4 h-4" />
+                                                    <span>{formatDuration(audioDuration)}</span>
+                                                </div>
+                                                {audioSize > 0 && (
+                                                    <div className="flex items-center gap-2">
+                                                        <FiDatabase className="w-4 h-4" />
+                                                        <span>{formatFileSize(audioSize)}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Audio Player */}
+                                            <div className="mb-6">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className="text-xs text-gray-500">
+                                                        {formatTime(audioCurrentTime)} / {formatDuration(audioDuration)}
+                                                    </span>
+                                                </div>
+
+                                                <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                                                    <div
+                                                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300"
+                                                        style={{ width: `${audioProgress}%` }}
+                                                    />
+                                                </div>
+
+                                                <div className="flex items-center justify-center gap-4">
+                                                    <button
+                                                        onClick={() => playAudio(audio)}
+                                                        className={`p-3 rounded-full ${
+                                                            isCurrentAudio && isPlaying
+                                                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+                                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                        }`}
+                                                    >
+                                                        {isCurrentAudio && isPlaying ? <FiPause /> : <FiPlay />}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex gap-2 pt-4 border-t border-gray-100">
+                                                {audio.audio?.id ? (
+                                                    <button
+                                                        onClick={() => handleDownload(audio.audio.id, audio.name)}
+                                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-xl hover:from-green-600 hover:to-green-700 transition"
+                                                    >
+                                                        <FiDownload />
+                                                        Yuklab olish
+                                                    </button>
+                                                ) : (
+                                                    <div className="flex-1 text-center px-4 py-3 bg-gray-100 text-gray-500 rounded-xl text-sm">
+                                                        Audio mavjud emas
+                                                    </div>
+                                                )}
+
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setEditId(audio.id);
+                                                            setForm({
+                                                                ...audio,
+                                                                audioId: audio.audio?.id,
+                                                                imageId: audio.image?.id
+                                                            });
+                                                            setOpenModal(true);
+                                                        }}
+                                                        className="p-3 bg-yellow-50 text-yellow-600 rounded-xl hover:bg-yellow-100 transition"
+                                                    >
+                                                        <FiEdit2 />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(audio.id, audio.name)}
+                                                        className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition"
+                                                    >
+                                                        <FiTrash2 />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6 border-t border-gray-200">
+                                {/* Page info */}
+                                <div className="text-sm text-gray-600">
+                                    Jami {totalElements} ta audiodan {Math.min((currentPage * pageSize) + 1, totalElements)}-{Math.min((currentPage + 1) * pageSize, totalElements)} tasi ko'rsatilmoqda
+                                </div>
+
+                                {/* Pagination buttons */}
+                                <div className="flex items-center gap-2">
+                                    {/* Previous button */}
+                                    <button
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 0}
+                                        className={`p-2 rounded-lg ${currentPage === 0
+                                            ? 'text-gray-400 cursor-not-allowed'
+                                            : 'text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                    >
+                                        <FiChevronLeft className="w-5 h-5" />
+                                    </button>
+
+                                    {/* Page numbers */}
+                                    {getPageNumbers().map((pageNum) => (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => handlePageChange(pageNum)}
+                                            className={`w-10 h-10 rounded-lg font-medium ${currentPage === pageNum
+                                                ? 'bg-blue-600 text-white'
+                                                : 'text-gray-700 hover:bg-gray-100'
+                                            }`}
+                                        >
+                                            {pageNum + 1}
+                                        </button>
+                                    ))}
+
+                                    {/* Next button */}
+                                    <button
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages - 1}
+                                        className={`p-2 rounded-lg ${currentPage === totalPages - 1
+                                            ? 'text-gray-400 cursor-not-allowed'
+                                            : 'text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                    >
+                                        <FiChevronRight className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                {/* Page selector */}
+                                <div className="text-sm text-gray-500">
+                                    Sahifa {currentPage + 1} / {totalPages}
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
             </main>
 
@@ -606,7 +795,7 @@ const AdminAudio = () => {
                         {/* Header */}
                         <div className="sticky top-0 bg-white z-10 border-b px-6 py-4 flex justify-between items-center">
                             <h2 className="text-2xl font-bold text-gray-900">
-                                {editId ? "Audioni tahrirlash" : "Yangi audio qo‘shish"}
+                                {editId ? "Audioni tahrirlash" : "Yangi audio qo'shish"}
                             </h2>
                             <button
                                 onClick={() => {
@@ -671,7 +860,7 @@ const AdminAudio = () => {
                                 </label>
                                 <input
                                     type="text"
-                                    placeholder="Masalan: Audio dars, podkast, ma’ruza"
+                                    placeholder="Masalan: Audio dars, podkast, ma'ruza"
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                     value={form.genre || ""}
                                     onChange={e => setForm({ ...form, genre: e.target.value })}
@@ -746,7 +935,7 @@ const AdminAudio = () => {
                                         : 'hover:from-blue-700 hover:to-indigo-700'}
             `}
                                 >
-                                    {editId ? "Saqlash" : "Qo‘shish"}
+                                    {editId ? "Saqlash" : "Qo'shish"}
                                 </button>
                             </div>
 
@@ -754,7 +943,6 @@ const AdminAudio = () => {
                     </div>
                 </div>
             )}
-
 
             <style jsx>{`
         .animate-slide-in {

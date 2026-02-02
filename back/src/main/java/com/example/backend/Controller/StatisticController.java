@@ -23,6 +23,8 @@ public class StatisticController {
     private final FacultyRepo facultyRepo;
     private final SubjectRepo subjectRepo;
     private final FacultySubjectRepo facultySubjectRepo;
+    private final BadiiyRepo badiiyRepo;
+    private final AudioRepo audioRepo;
 
     @GetMapping
     public Map<String, Object> getStatistics() {
@@ -33,10 +35,12 @@ public class StatisticController {
            BASIC COUNTS
         ===================== */
         stats.put("booksCount", bookRepo.count());
+        stats.put("booksLibraryCount", bookRepo.bookLibraryCount());
         stats.put("facultiesCount", facultyRepo.count());
         stats.put("subjectsCount", subjectRepo.count());
         stats.put("facultySubjectsCount", facultySubjectRepo.count());
-
+        stats.put("badiiyCount", badiiyRepo.count());
+        stats.put("audioCount", audioRepo.count());
         /* =====================
            BOOK STATISTICS
         ===================== */

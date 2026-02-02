@@ -69,4 +69,7 @@ public interface BookRepo extends JpaRepository<Book, Integer> {
     """)
     List<Object[]> countBooksBySubjectIds(@Param("subjectIds") List<Integer> subjectIds);
 
+
+    @Query(value = "select sum(library_count) from book", nativeQuery = true)
+    Integer  bookLibraryCount();
 }
