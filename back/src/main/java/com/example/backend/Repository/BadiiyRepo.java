@@ -11,7 +11,7 @@ public interface BadiiyRepo extends JpaRepository<Badiiy, Integer> {
     @Query("SELECT b FROM Badiiy b WHERE " +
             "(:title = '' OR LOWER(b.name) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
             "(:author = '' OR LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%'))) AND " +
-            "(:publisher = '' OR LOWER(b.publisher) LIKE LOWER(CONCAT('%', :publisher, '%')))")
+            "(:publisher = '' OR LOWER(b.publisher) LIKE LOWER(CONCAT('%', :publisher, '%'))) order by b.id desc ")
     Page<Badiiy> findAllByTitleAuthorPublisher(
             String title,
             String author,

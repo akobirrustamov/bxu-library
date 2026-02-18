@@ -13,6 +13,7 @@ import AdminAudio from "./admin/AdminAudio";
 import OneBook from "./pages/OneBook";
 import OneBadiiy from "./pages/OneBadiiy";
 import AdminSubjectBooks from "./admin/AdminSubjectBooks";
+import AdminIlmiy from "./admin/AdminIlmiy";
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/admin/books" element={<AdminBooks />} />
             <Route path="/admin/faculty" element={<AdminFaculty />} />
             <Route path="/admin/subjects" element={<AdminSubject />} />
+            <Route path="/admin/ilmiy" element={<AdminIlmiy />} />
 
             <Route path="/admin/faculty-subjects" element={<AdminFacultySubject />} />
                 <Route path="/admin/faculty-statistic/:facultyId" element={<AdminFacultyDetails />} />

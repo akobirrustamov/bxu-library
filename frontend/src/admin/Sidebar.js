@@ -15,6 +15,7 @@ import {
   FiUser,
   FiHelpCircle, FiMusic
 } from "react-icons/fi";
+import {FaBookAtlas} from "react-icons/fa6";
 
 function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -64,6 +65,12 @@ function Sidebar() {
       icon: <FiMusic />,
       label: "Audio Adabiyotlar",
       adminPath: "/admin/audio"
+    },
+    {
+      path: "/admin/ilmiy",
+      icon: <FaBookAtlas />,
+      label: "Desertatsiya ishlari",
+      adminPath: "/admin/ilmiy"
     },
   ];
 
