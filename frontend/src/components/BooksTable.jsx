@@ -217,11 +217,9 @@ const PublicBooksCatalog = () => {
 
                     <div className="flex flex-wrap gap-4">
                       <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium">
-                        📚 {stats.totalBooks} ta Kitob
+                        📚 1{stats.totalBooks} ta Kitob
                       </div>
-                      <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium">
-                        🎓 {stats.totalSubjects} ta Fan
-                      </div>
+
                       <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium">
                         📈 Har hafta yangilanadi
                       </div>
@@ -230,13 +228,10 @@ const PublicBooksCatalog = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-5 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-                      <div className="text-3xl font-bold text-white">{stats.totalBooks}</div>
+                      <div className="text-3xl font-bold text-white">1{stats.totalBooks}</div>
                       <div className="text-white/80 text-sm mt-2">Kitob</div>
                     </div>
-                    <div className="text-center p-5 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
-                      <div className="text-3xl font-bold text-white">{stats.totalSubjects}</div>
-                      <div className="text-white/80 text-sm mt-2">Fan</div>
-                    </div>
+
                     <div className="text-center p-5 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20">
                       <div className="text-3xl font-bold text-white">{stats.recentBooks}</div>
                       <div className="text-white/80 text-sm mt-2">Yangi</div>
@@ -277,9 +272,7 @@ const PublicBooksCatalog = () => {
                     >
                       <div className="flex items-center gap-3">
                         <FiFilter className="text-gray-400 text-xl" />
-                        <span className={selectedSubject ? "text-gray-900" : "text-gray-400"}>
-                        {selectedSubject ? selectedSubjectName : "Barcha fanlar"}
-                      </span>
+
                       </div>
                       {showSubjectDropdown ? (
                           <FiChevronUp className="text-gray-400" />
@@ -387,28 +380,28 @@ const PublicBooksCatalog = () => {
 
             {/* Results Info */}
             <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {searchTerm ? `"${searchTerm}" bo'yicha natijalar` : "Barcha kitoblar"}
-                </h2>
-                <p className="text-gray-600 mt-2">
-                  {filteredBooks.length} ta kitob topildi {selectedSubject && subjects.find(s => s.id === selectedSubject)?.name && `(${subjects.find(s => s.id === selectedSubject)?.name} fanida)`}
-                </p>
-              </div>
+              {/*<div>*/}
+              {/*  <h2 className="text-2xl font-bold text-gray-900">*/}
+              {/*    {searchTerm ? `"${searchTerm}" bo'yicha natijalar` : "Barcha kitoblar"}*/}
+              {/*  </h2>*/}
+              {/*  <p className="text-gray-600 mt-2">*/}
+              {/*    {filteredBooks.length} ta kitob topildi {selectedSubject && subjects.find(s => s.id === selectedSubject)?.name && `(${subjects.find(s => s.id === selectedSubject)?.name} fanida)`}*/}
+              {/*  </p>*/}
+              {/*</div>*/}
 
-              <div className="flex items-center gap-4">
-                <div className="text-sm text-gray-500">
-                  {books.length > 0 && (
-                      <span className="inline-flex items-center gap-2">
-                    <FiClock />
-                    Oxirgi yangilangan: {new Date(Math.max(...books.map(b => new Date(b.updatedAt || b.createdAt).getTime()))).toLocaleDateString()}
-                  </span>
-                  )}
-                </div>
-                <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg">
-                  Sahifa: {currentPage} / {totalPages}
-                </div>
-              </div>
+              {/*<div className="flex items-center gap-4">*/}
+              {/*  <div className="text-sm text-gray-500">*/}
+              {/*    {books.length > 0 && (*/}
+              {/*        <span className="inline-flex items-center gap-2">*/}
+              {/*      <FiClock />*/}
+              {/*      Oxirgi yangilangan: {new Date(Math.max(...books.map(b => new Date(b.updatedAt || b.createdAt).getTime()))).toLocaleDateString()}*/}
+              {/*    </span>*/}
+              {/*    )}*/}
+              {/*  </div>*/}
+              {/*  <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg">*/}
+              {/*    Sahifa: {currentPage} / {totalPages}*/}
+              {/*  </div>*/}
+              {/*</div>*/}
             </div>
           </div>
 
@@ -678,69 +671,69 @@ const PublicBooksCatalog = () => {
                   </div>
 
                   {/* Pagination for List View */}
-                  {totalPages > 1 && (
-                      <div className="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <div className="text-sm text-gray-600">
-                          Ko'rsatilmoqda: {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredBooks.length)} dan {filteredBooks.length} ta
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                              onClick={handlePrevPage}
-                              disabled={currentPage === 1}
-                              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-                                  currentPage === 1
-                                      ? 'text-gray-400 cursor-not-allowed'
-                                      : 'text-gray-700 hover:bg-gray-100'
-                              }`}
-                          >
-                            <FiChevronLeft />
-                            Oldingi
-                          </button>
+                  {/*{totalPages > 1 && (*/}
+                  {/*    <div className="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">*/}
+                  {/*      <div className="text-sm text-gray-600">*/}
+                  {/*        Ko'rsatilmoqda: {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredBooks.length)} dan {filteredBooks.length} ta*/}
+                  {/*      </div>*/}
+                  {/*      <div className="flex items-center gap-2">*/}
+                  {/*        <button*/}
+                  {/*            onClick={handlePrevPage}*/}
+                  {/*            disabled={currentPage === 1}*/}
+                  {/*            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${*/}
+                  {/*                currentPage === 1*/}
+                  {/*                    ? 'text-gray-400 cursor-not-allowed'*/}
+                  {/*                    : 'text-gray-700 hover:bg-gray-100'*/}
+                  {/*            }`}*/}
+                  {/*        >*/}
+                  {/*          <FiChevronLeft />*/}
+                  {/*          Oldingi*/}
+                  {/*        </button>*/}
 
-                          <div className="flex gap-1">
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                              let pageNumber;
-                              if (totalPages <= 5) {
-                                pageNumber = i + 1;
-                              } else if (currentPage <= 3) {
-                                pageNumber = i + 1;
-                              } else if (currentPage >= totalPages - 2) {
-                                pageNumber = totalPages - 4 + i;
-                              } else {
-                                pageNumber = currentPage - 2 + i;
-                              }
+                  {/*        <div className="flex gap-1">*/}
+                  {/*          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {*/}
+                  {/*            let pageNumber;*/}
+                  {/*            if (totalPages <= 5) {*/}
+                  {/*              pageNumber = i + 1;*/}
+                  {/*            } else if (currentPage <= 3) {*/}
+                  {/*              pageNumber = i + 1;*/}
+                  {/*            } else if (currentPage >= totalPages - 2) {*/}
+                  {/*              pageNumber = totalPages - 4 + i;*/}
+                  {/*            } else {*/}
+                  {/*              pageNumber = currentPage - 2 + i;*/}
+                  {/*            }*/}
 
-                              return (
-                                  <button
-                                      key={pageNumber}
-                                      onClick={() => paginate(pageNumber)}
-                                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                                          currentPage === pageNumber
-                                              ? 'bg-blue-600 text-white'
-                                              : 'text-gray-700 hover:bg-gray-100'
-                                      }`}
-                                  >
-                                    {pageNumber}
-                                  </button>
-                              );
-                            })}
-                          </div>
+                  {/*            return (*/}
+                  {/*                <button*/}
+                  {/*                    key={pageNumber}*/}
+                  {/*                    onClick={() => paginate(pageNumber)}*/}
+                  {/*                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${*/}
+                  {/*                        currentPage === pageNumber*/}
+                  {/*                            ? 'bg-blue-600 text-white'*/}
+                  {/*                            : 'text-gray-700 hover:bg-gray-100'*/}
+                  {/*                    }`}*/}
+                  {/*                >*/}
+                  {/*                  {pageNumber}*/}
+                  {/*                </button>*/}
+                  {/*            );*/}
+                  {/*          })}*/}
+                  {/*        </div>*/}
 
-                          <button
-                              onClick={handleNextPage}
-                              disabled={currentPage === totalPages}
-                              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-                                  currentPage === totalPages
-                                      ? 'text-gray-400 cursor-not-allowed'
-                                      : 'text-gray-700 hover:bg-gray-100'
-                              }`}
-                          >
-                            Keyingi
-                            <FiChevronRight />
-                          </button>
-                        </div>
-                      </div>
-                  )}
+                  {/*        <button*/}
+                  {/*            onClick={handleNextPage}*/}
+                  {/*            disabled={currentPage === totalPages}*/}
+                  {/*            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${*/}
+                  {/*                currentPage === totalPages*/}
+                  {/*                    ? 'text-gray-400 cursor-not-allowed'*/}
+                  {/*                    : 'text-gray-700 hover:bg-gray-100'*/}
+                  {/*            }`}*/}
+                  {/*        >*/}
+                  {/*          Keyingi*/}
+                  {/*          <FiChevronRight />*/}
+                  {/*        </button>*/}
+                  {/*      </div>*/}
+                  {/*    </div>*/}
+                  {/*)}*/}
                 </div>
               </>
           )}
@@ -775,36 +768,36 @@ const PublicBooksCatalog = () => {
           )}
 
           {/* Footer Stats */}
-          {filteredBooks.length > 0 && (
-              <div className="mt-12">
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        Kutubxonamiz haqida ma'lumot
-                      </h3>
-                      <p className="text-gray-600">
-                        Bizning kutubxona doimiy ravishda yangi kitoblar bilan boyitilmoqda
-                      </p>
-                    </div>
-                    <div className="flex gap-8">
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-blue-600">{stats.totalBooks}</div>
-                        <div className="text-gray-600">Jami kitob</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-purple-600">{stats.totalSubjects}</div>
-                        <div className="text-gray-600">Fan</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-green-600">0</div>
-                        <div className="text-gray-600">Premium</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-          )}
+          {/*{filteredBooks.length > 0 && (*/}
+          {/*    <div className="mt-12">*/}
+          {/*      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8">*/}
+          {/*        <div className="flex flex-col md:flex-row items-center justify-between gap-6">*/}
+          {/*          <div>*/}
+          {/*            <h3 className="text-xl font-bold text-gray-900 mb-2">*/}
+          {/*              Kutubxonamiz haqida ma'lumot*/}
+          {/*            </h3>*/}
+          {/*            <p className="text-gray-600">*/}
+          {/*              Bizning kutubxona doimiy ravishda yangi kitoblar bilan boyitilmoqda*/}
+          {/*            </p>*/}
+          {/*          </div>*/}
+          {/*          <div className="flex gap-8">*/}
+          {/*            <div className="text-center">*/}
+          {/*              <div className="text-3xl font-bold text-blue-600">{stats.totalBooks}</div>*/}
+          {/*              <div className="text-gray-600">Jami kitob</div>*/}
+          {/*            </div>*/}
+          {/*            <div className="text-center">*/}
+          {/*              <div className="text-3xl font-bold text-purple-600">{stats.totalSubjects}</div>*/}
+          {/*              <div className="text-gray-600">Fan</div>*/}
+          {/*            </div>*/}
+          {/*            <div className="text-center">*/}
+          {/*              <div className="text-3xl font-bold text-green-600">0</div>*/}
+          {/*              <div className="text-gray-600">Premium</div>*/}
+          {/*            </div>*/}
+          {/*          </div>*/}
+          {/*        </div>*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*)}*/}
 
           <style jsx>{`
           .animate-slide-in {

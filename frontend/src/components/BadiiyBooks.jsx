@@ -244,41 +244,41 @@ const AdminBadiiy = () => {
                 )}
 
                 {/* PAGINATION */}
-                {/*{totalPages > 1 &&  (*/}
-                {/*    <div className="flex justify-center items-center gap-2 mt-10">*/}
-                {/*        <button*/}
-                {/*            disabled={page === 0}*/}
-                {/*            onClick={() => setPage((p) => p - 1)}*/}
-                {/*            className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50 flex items-center gap-1"*/}
-                {/*        >*/}
-                {/*            <FiChevronLeft />*/}
-                {/*            Oldingi*/}
-                {/*        </button>*/}
+                {totalPages > 1 &&  (
+                    <div className="flex justify-center flex-wrap items-center gap-2 mt-10">
+                        <button
+                            disabled={page === 0}
+                            onClick={() => setPage((p) => p - 1)}
+                            className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50 flex items-center gap-1"
+                        >
+                            <FiChevronLeft />
+                            Oldingi
+                        </button>
 
-                {/*        {[...Array(totalPages)].map((_, i) => (*/}
-                {/*            <button*/}
-                {/*                key={i}*/}
-                {/*                onClick={() => setPage(i)}*/}
-                {/*                className={`px-4 py-2 rounded-lg border ${*/}
-                {/*                    page === i*/}
-                {/*                        ? "bg-blue-600 text-white border-blue-600"*/}
-                {/*                        : "bg-white hover:bg-gray-100"*/}
-                {/*                }`}*/}
-                {/*            >*/}
-                {/*                {i + 1}*/}
-                {/*            </button>*/}
-                {/*        ))}*/}
+                        {[...Array(totalPages)].map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setPage(i)}
+                                className={`px-4 py-2 rounded-lg border ${
+                                    page === i
+                                        ? "bg-blue-600 text-white border-blue-600"
+                                        : "bg-white hover:bg-gray-100"
+                                }`}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
 
-                {/*        <button*/}
-                {/*            disabled={page === totalPages - 1}*/}
-                {/*            onClick={() => setPage((p) => p + 1)}*/}
-                {/*            className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50 flex items-center gap-1"*/}
-                {/*        >*/}
-                {/*            Keyingi*/}
-                {/*            <FiChevronRight />*/}
-                {/*        </button>*/}
-                {/*    </div>*/}
-                {/*)}*/}
+                        <button
+                            disabled={page === totalPages - 1}
+                            onClick={() => setPage((p) => p + 1)}
+                            className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50 flex items-center gap-1"
+                        >
+                            Keyingi
+                            <FiChevronRight />
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
