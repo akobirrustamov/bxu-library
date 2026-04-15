@@ -73,6 +73,14 @@ public interface BookRepo extends JpaRepository<Book, Integer> {
     @Query(value = "select sum(library_count) from book", nativeQuery = true)
     Integer  bookLibraryCount();
 
+    @Query("""
+        SELECT DISTINCT b.shelf
+        FROM Book b
+        WHERE b.shelf IS NOT NULL AND TRIM(b.shelf) <> ''
+        ORDER BY b.shelf
+    """)
+    List<String> findDistinctShelves();
+
 
     @Query("""
    SELECT b FROM Book b

@@ -36,6 +36,7 @@ public class Book {
 
     private String publisher;
     private Integer bookType;
+    private String shelf;
 
     private String genre;
     private String path;

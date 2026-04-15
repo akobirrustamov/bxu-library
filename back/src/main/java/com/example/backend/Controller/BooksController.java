@@ -58,6 +58,7 @@ public class BooksController {
                 .author(dto.getAuthor())
                 .publisher(dto.getPublisher())
                 .bookType(dto.getBookType())
+            .shelf(normalizeShelf(dto.getShelf()))
                 .genre(dto.getGenre())
                 .path(dto.getPath())
                 .subject(subject)
@@ -195,6 +196,7 @@ public class BooksController {
         book.setAuthor(dto.getAuthor());
         book.setPublisher(dto.getPublisher());
         book.setBookType(dto.getBookType());
+        book.setShelf(normalizeShelf(dto.getShelf()));
         book.setGenre(dto.getGenre());
         book.setPath(dto.getPath());
         book.setSubject(subject);
@@ -221,6 +223,11 @@ public class BooksController {
 
         bookRepo.deleteById(id);
         return ResponseEntity.ok("Book deleted successfully");
+    }
+
+    @GetMapping("/shelves")
+    public ResponseEntity<List<String>> getShelves() {
+        return ResponseEntity.ok(bookRepo.findDistinctShelves());
     }
 
     /* =========================
@@ -250,11 +257,18 @@ public class BooksController {
                 .subjectName(book.getSubject().getName())
                 .kurs(kurs)
                 .bookType(book.getBookType())
+                .shelf(book.getShelf())
                 .isHaveLibrary(book.getIsHaveLibrary())
                 .libraryCount(book.getLibraryCount())
                 .imageId(book.getImage() != null ? book.getImage().getId() : null)
                 .pdfId(book.getPdf() != null ? book.getPdf().getId() : null)
                 .build();
+    }
+
+    private String normalizeShelf(String shelf) {
+        if (shelf == null) return null;
+        String trimmed = shelf.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
 

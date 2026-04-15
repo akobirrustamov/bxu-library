@@ -26,6 +26,7 @@ public class BookDTO {
     private String subjectName;
     private Integer kurs;
     private Integer bookType;
+    private String shelf;
 
     private UUID imageId;
     private UUID pdfId;

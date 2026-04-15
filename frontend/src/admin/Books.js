@@ -47,6 +47,9 @@ const AdminBooks = () => {
         subjectId: null
     });
     const [subjects, setSubjects] = useState([]);
+    const [shelves, setShelves] = useState([]);
+    const [isAddingShelf, setIsAddingShelf] = useState(false);
+    const [newShelfName, setNewShelfName] = useState("");
 
     // Modal states
     const [openModal, setOpenModal] = useState(false);
@@ -67,6 +70,7 @@ const AdminBooks = () => {
         path: "",
         subjectId: "",
         bookType: "",
+        shelf: "",
         pdfId: null,
         imageId: null,
     });
@@ -82,6 +86,7 @@ const AdminBooks = () => {
     ========================= */
     useEffect(() => {
         loadSubjects();
+        loadShelves();
     }, []);
 
     useEffect(() => {
@@ -134,10 +139,29 @@ const AdminBooks = () => {
         }
     };
 
+    const loadShelves = async () => {
+        try {
+            const res = await ApiCall("/api/v1/books/shelves", "GET");
+            if (!res?.error) {
+                setShelves(Array.isArray(res.data) ? res.data : []);
+            }
+        } catch (error) {
+            console.error("Error loading shelves:", error);
+        }
+    };
+
     const subjectOptions = subjects.map(s => ({
         value: s.id,
         label: s.name
     }));
+
+    const shelfOptions = [...new Set([
+        ...shelves,
+        ...books.map((b) => b.shelf).filter(Boolean),
+        form.shelf,
+    ].filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b))
+        .map((shelf) => ({ value: shelf, label: shelf }));
 
     /* =========================
        FILTER HANDLERS
@@ -168,6 +192,19 @@ const AdminBooks = () => {
             subjectId: null
         });
         setCurrentPage(0);
+    };
+
+    const handleAddShelf = () => {
+        const value = newShelfName.trim();
+        if (!value) return;
+
+        setShelves((prev) => {
+            if (prev.includes(value)) return prev;
+            return [...prev, value].sort((a, b) => a.localeCompare(b));
+        });
+        setForm((prev) => ({ ...prev, shelf: value }));
+        setNewShelfName("");
+        setIsAddingShelf(false);
     };
 
     /* =========================
@@ -300,9 +337,12 @@ const AdminBooks = () => {
             path: "",
             subjectId: "",
             bookType: "",
+            shelf: "",
             pdfId: null,
             imageId: null,
         });
+        setIsAddingShelf(false);
+        setNewShelfName("");
         setUploadProgress({ pdf: 0, image: 0 });
     };
 
@@ -317,6 +357,7 @@ const AdminBooks = () => {
             path: b.path || "",
             subjectId: b.subject?.id ?? b.subjectId ?? "",   // ← совместимо с Book и BookDTO
             bookType: b.bookType ?? "",
+            shelf: b.shelf || "",
             pdfId: b.pdf?.id ?? b.pdfId ?? null,             // ← совместимо с Book и BookDTO
             imageId: b.image?.id ?? b.imageId ?? null,       // ← совместимо с Book и BookDTO
         });
@@ -1024,6 +1065,81 @@ const AdminBooks = () => {
                                         }),
                                     }}
                                 />
+                            </div>
+
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Kitob polkasi
+                                    </label>
+                                    {!isAddingShelf ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsAddingShelf(true)}
+                                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                                        >
+                                            <FiPlus className="w-4 h-4" />
+                                            Polka qo'shish
+                                        </button>
+                                    ) : null}
+                                </div>
+
+                                <Select
+                                    options={shelfOptions}
+                                    value={shelfOptions.find(o => o.value === form.shelf) || null}
+                                    onChange={(option) =>
+                                        setForm({ ...form, shelf: option ? option.value : "" })
+                                    }
+                                    isSearchable
+                                    isClearable
+                                    placeholder="Polkani tanlang"
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                    styles={{
+                                        control: (base) => ({
+                                            ...base,
+                                            borderRadius: "0.75rem",
+                                            backgroundColor: "#f9fafb",
+                                            borderColor: "#d1d5db",
+                                            minHeight: "48px",
+                                        }),
+                                    }}
+                                />
+
+                                {isAddingShelf && (
+                                    <div className="mt-3 flex items-center gap-2">
+                                        <input
+                                            type="text"
+                                            value={newShelfName}
+                                            onChange={(e) => setNewShelfName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    e.preventDefault();
+                                                    handleAddShelf();
+                                                }
+                                            }}
+                                            placeholder="Masalan: A1 yoki B2"
+                                            className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleAddShelf}
+                                            className="px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+                                        >
+                                            Qo'shish
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsAddingShelf(false);
+                                                setNewShelfName("");
+                                            }}
+                                            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition"
+                                        >
+                                            Bekor
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Description */}
