@@ -14,6 +14,7 @@ public class FacultySubjectDTO {
     private Integer id;
     private Integer facultyId;
     private Integer subjectId;
+    private Integer kurs;
 
     // ixtiyoriy (frontend uchun qulay)
     private String facultyName;

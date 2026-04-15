@@ -40,6 +40,7 @@ const AdminFacultySubject = () => {
     const [form, setForm] = useState({
         facultyId: "",
         subjectId: "",
+        kurs: "",
     });
 
     /* =========================
@@ -101,6 +102,7 @@ const AdminFacultySubject = () => {
         setForm({
             facultyId: "",
             subjectId: "",
+            kurs: "",
         });
         setEditId(null);
     };
@@ -114,7 +116,7 @@ const AdminFacultySubject = () => {
        CREATE / UPDATE
     ========================= */
     const handleSubmit = async () => {
-        if (!form.facultyId || !form.subjectId) {
+        if (!form.facultyId || !form.subjectId || !form.kurs) {
             alert("Fakultet va Fan tanlanishi shart");
             return;
         }
@@ -141,6 +143,7 @@ const AdminFacultySubject = () => {
         setForm({
             facultyId: fs.facultyId,
             subjectId: fs.subjectId,
+            kurs: fs.kurs ?? "",
         });
         setOpenModal(true);
     };
@@ -173,13 +176,6 @@ const AdminFacultySubject = () => {
         description: s.description,
         ...s
     }));
-
-    // Filter subjects that are not already assigned to the selected faculty
-    const availableSubjectOptions = subjectOptions.filter(s =>
-        !facultySubjects.some(fs =>
-            fs.subjectId === s.value && fs.facultyId === Number(selectedFaculty)
-        )
-    );
 
     /* =========================
        STATS
@@ -291,6 +287,7 @@ const AdminFacultySubject = () => {
         </div>
     );
 
+
     // Custom faculty option component
     const FacultyOption = ({ innerRef, innerProps, data, isSelected, isFocused }) => (
         <div
@@ -306,10 +303,18 @@ const AdminFacultySubject = () => {
             <div className="flex items-center gap-2 mt-1">
                 <span className="text-xs text-gray-500">Kod: {data.code}</span>
                 <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-800">
-          {data.educationTypeName || "Ta'lim turi"}
-        </span>
+                    {data.educationTypeName || "Ta'lim turi"}
+                </span>
             </div>
         </div>
+    );
+    // availableSubjectOptions должен включать текущий предмет при редактировании
+    const availableSubjectOptions = subjectOptions.filter(s =>
+        !facultySubjects.some(fs =>
+            fs.subjectId === s.value &&
+            fs.facultyId === Number(selectedFaculty) &&
+            fs.id !== editId   // ← исключить текущую запись из фильтра
+        )
     );
 
     return (
@@ -327,16 +332,16 @@ const AdminFacultySubject = () => {
                             </div>
                             <button
                                 onClick={() => {
-                                    setForm({ facultyId: selectedFaculty, subjectId: "" });
+                                    setForm({ facultyId: selectedFaculty, subjectId: "", kurs: "" });
                                     setOpenModal(true);
                                 }}
                                 disabled={!selectedFaculty}
                                 className={`
                   flex items-center gap-2 px-6 py-3 
                   ${selectedFaculty
-                                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
-                                    : 'bg-gray-300 cursor-not-allowed'
-                                } 
+                                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                                        : 'bg-gray-300 cursor-not-allowed'
+                                    } 
                   text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl
                 `}
                             >
@@ -472,7 +477,7 @@ const AdminFacultySubject = () => {
                                                 {!searchTerm && (
                                                     <button
                                                         onClick={() => {
-                                                            setForm({ facultyId: selectedFaculty, subjectId: "" });
+                                                            setForm({ facultyId: selectedFaculty, subjectId: "", kurs: "" });
                                                             setOpenModal(true);
                                                         }}
                                                         className="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition"
@@ -499,22 +504,30 @@ const AdminFacultySubject = () => {
                                                                             </h3>
                                                                             {fs.bookCount > 0 && (
                                                                                 <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                                          <FiBook className="w-3 h-3 mr-1" />
+                                                                                    <FiBook className="w-3 h-3 mr-1" />
                                                                                     {fs.bookCount} ta kitob
-                                        </span>
+                                                                                </span>
                                                                             )}
                                                                         </div>
 
                                                                         <div className="flex items-center gap-2 mt-2">
-                                      <span className="inline-flex items-center gap-1 text-sm text-gray-600">
-                                        <FiUsers className="w-4 h-4" />
-                                          {fs.facultyName}
-                                      </span>
+                                                                            <span className="inline-flex items-center gap-1 text-sm text-gray-600">
+                                                                                <FiUsers className="w-4 h-4" />
+                                                                                {fs.facultyName}
+                                                                            </span>
                                                                             <span className="text-gray-400">•</span>
                                                                             <span className="inline-flex items-center gap-1 text-sm text-gray-600">
-                                        <FiHash className="w-4 h-4" />
-                                        Fan ID: {fs.subjectId}
-                                      </span>
+                                                                                <FiHash className="w-4 h-4" />
+                                                                                Fan ID: {fs.subjectId}
+                                                                            </span>
+                                                                            {fs.kurs && (
+                                                                                <>
+                                                                                    <span className="text-gray-400">•</span>
+                                                                                    <span className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600">
+                                                                                        {fs.kurs}-kurs
+                                                                                    </span>
+                                                                                </>
+                                                                            )}
                                                                         </div>
 
                                                                         {/* Expandable Details */}
@@ -547,6 +560,11 @@ const AdminFacultySubject = () => {
                                                                 </div>
 
                                                                 <div className="flex items-center gap-2">
+                                                                    {!fs.kurs && (
+                                                                        <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">
+                                                                            Kurs tanlanmagan
+                                                                        </span>
+                                                                    )}
                                                                     <button
                                                                         onClick={() => handleEdit(fs)}
                                                                         className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition"
@@ -642,7 +660,7 @@ const AdminFacultySubject = () => {
                                 </label>
                                 <Select
                                     options={availableSubjectOptions}
-                                    value={subjectOptions.find(s => s.value === Number(form.subjectId))}
+                                    value={availableSubjectOptions.find(s => s.value === Number(form.subjectId))}
                                     onChange={(selected) => setForm({ ...form, subjectId: selected ? selected.value : "" })}
                                     placeholder="Fan nomi bo'yicha qidirish..."
                                     isSearchable
@@ -664,7 +682,21 @@ const AdminFacultySubject = () => {
                                     Faqat hozircha biriktirilmagan fanlar ko'rsatiladi
                                 </p>
                             </div>
-
+                            {/* Kurs Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Kurs *
+                                </label>
+                                <Select
+                                    options={[1, 2, 3, 4, 5].map(k => ({ value: k, label: `${k}-kurs` }))}
+                                    value={form.kurs ? { value: form.kurs, label: `${form.kurs}-kurs` } : null}
+                                    onChange={(selected) => setForm({ ...form, kurs: selected ? selected.value : "" })}
+                                    placeholder="Kursni tanlang..."
+                                    isClearable
+                                    styles={customStyles}
+                                    noOptionsMessage={() => "Kurs topilmadi"}
+                                />
+                            </div>
                             {/* Selected Subject Preview */}
                             {form.subjectId && (
                                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
@@ -691,8 +723,8 @@ const AdminFacultySubject = () => {
                             <div className="text-center text-sm text-gray-500">
                                 {faculties.find(f => f.id === Number(form.facultyId))?.name} fakultetiga
                                 <span className="font-semibold text-blue-600 mx-1">
-                  {availableSubjectOptions.length}
-                </span>
+                                    {availableSubjectOptions.length}
+                                </span>
                                 ta mavjud fan qolgan
                             </div>
 
@@ -706,14 +738,14 @@ const AdminFacultySubject = () => {
                                 </button>
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={!form.subjectId}
+                                    disabled={!form.subjectId || !form.kurs}
                                     className={`
                     px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold 
                     rounded-xl transition shadow-lg
                     ${!form.subjectId
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : 'hover:from-blue-700 hover:to-indigo-700'
-                                    }
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : 'hover:from-blue-700 hover:to-indigo-700'
+                                        }
                   `}
                                 >
                                     {editId ? "Saqlash" : "Biriktirish"}

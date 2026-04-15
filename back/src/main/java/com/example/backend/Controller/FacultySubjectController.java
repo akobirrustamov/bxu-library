@@ -44,6 +44,7 @@ public class FacultySubjectController {
         FacultySubject facultySubject = FacultySubject.builder()
                 .faculty(faculty)
                 .subject(subject)
+                .kurs(dto.getKurs())
                 .build();
 
         facultySubjectRepo.save(facultySubject);
@@ -99,6 +100,7 @@ public class FacultySubjectController {
 
         facultySubject.setFaculty(faculty);
         facultySubject.setSubject(subject);
+        facultySubject.setKurs(dto.getKurs());
 
         facultySubjectRepo.save(facultySubject);
 
@@ -127,6 +129,7 @@ public class FacultySubjectController {
                 .id(fs.getId())
                 .facultyId(fs.getFaculty().getId())
                 .subjectId(fs.getSubject().getId())
+                .kurs(fs.getKurs())
                 .facultyName(fs.getFaculty().getName())
                 .subjectName(fs.getSubject().getName())
                 .build();

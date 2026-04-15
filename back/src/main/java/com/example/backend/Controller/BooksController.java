@@ -81,24 +81,18 @@ public class BooksController {
 
 
     @GetMapping
-    public ResponseEntity<Page<Book>> getAll(
+    public ResponseEntity<Page<BookDTO>> getAll(
             @RequestParam(defaultValue = "") String title,
             @RequestParam(defaultValue = "") String author,
             @RequestParam(defaultValue = "") String publisher,
-            @RequestParam(required = false) Integer subjectId, // 👈 NEW
+            @RequestParam(required = false) Integer subjectId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-
-        Page<Book> result = bookRepo.findAllByTitleAuthorPublisherAndSubject(
-                title,
-                author,
-                publisher,
-                subjectId,
-                pageable
-        );
-
+        Page<BookDTO> result = bookRepo
+                .findAllByTitleAuthorPublisherAndSubject(title, author, publisher, subjectId, pageable)
+                .map(this::toDTO);                           // ← добавить .map(this::toDTO)
         return ResponseEntity.ok(result);
     }
 

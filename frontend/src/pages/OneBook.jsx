@@ -226,8 +226,8 @@ const OneBook = () => {
         );
     }
 
-    const imageUrl = book.imageId
-        ? `${baseUrl}/api/v1/file/img/${book.imageId}`
+    const imageUrl = book.image.id
+        ? `${baseUrl}/api/v1/file/img/${book.image.id}`
         : "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
 
     return (

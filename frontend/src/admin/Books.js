@@ -295,15 +295,15 @@ const AdminBooks = () => {
     const handleEdit = (b) => {
         setEditId(b.id);
         setForm({
-            name: b.name,
+            name: b.name || "",
             description: b.description || "",
             author: b.author || "",
             publisher: b.publisher || "",
             genre: b.genre || "",
             path: b.path || "",
-            subjectId: b.subject?.id,
-            pdfId: b.pdf?.id || null,
-            imageId: b.image?.id || null,
+            subjectId: b.subject?.id ?? b.subjectId ?? "",   // ← совместимо с Book и BookDTO
+            pdfId: b.pdf?.id ?? b.pdfId ?? null,             // ← совместимо с Book и BookDTO
+            imageId: b.image?.id ?? b.imageId ?? null,       // ← совместимо с Book и BookDTO
         });
         setOpenModal(true);
     };
@@ -392,111 +392,113 @@ const AdminBooks = () => {
     /* =========================
        RENDER FUNCTIONS
     ========================= */
+    console.log(books);
+
     const renderTable = () => (
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full">
                     <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                    <tr>
-                        <th className="py-4 px-2 text-left text-gray-700 font-semibold"></th>
-                        <th className="py-4 px-2 text-left text-gray-700 font-semibold">Kitob nomi</th>
-                        <th className="py-4 px-2 text-left text-gray-700 font-semibold">
-                            Kutubxona
-                        </th>
-                        <th className="py-4 px-2 text-left text-gray-700 font-semibold">Muallif</th>
-                        <th className="py-4 px-2 text-left text-gray-700 font-semibold">Fan</th>
-                        <th className="py-4 px-2 text-left text-gray-700 font-semibold">Nashriyot</th>
-                        <th className="py-4 px-2 text-left text-gray-700 font-semibold">Havola</th>
-                        <th className="py-4 px-2 text-left text-gray-700 font-semibold">Amallar</th>
-                    </tr>
+                        <tr>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold"></th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Kitob nomi</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">
+                                Kutubxona
+                            </th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Muallif</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Fan</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Nashriyot</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Havola</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Amallar</th>
+                        </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                    {books.map((book, index) => (
-                        <tr key={book.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="py-4 px-2">
-                                <div>
-                                    <div className="font-medium text-gray-900">{index+1}</div>
+                        {books.map((book, index) => (
+                            <tr key={book.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="py-4 px-2">
+                                    <div>
+                                        <div className="font-medium text-gray-900">{index + 1}</div>
 
-                                </div>
-                            </td>
-                            <td className="py-4 px-2">
-                                <div>
-                                    <div className="font-medium text-gray-900">{book.name}</div>
-                                    <div className="text-sm text-gray-500 mt-1 truncate max-w-xs">
-                                        {book.description || "Tavsif yo'q"}
                                     </div>
-                                </div>
-                            </td>
-                            <td className="py-4 px-2">
-                                <button
-                                    onClick={() => {
-                                        setSelectedBook(book);
-                                        setLibraryCount(book.libraryCount || 0);
-                                        setLibraryModalOpen(true);
-                                    }}
-                                    className={`
+                                </td>
+                                <td className="py-4 px-2">
+                                    <div>
+                                        <div className="font-medium text-gray-900">{book.name}</div>
+                                        <div className="text-sm text-gray-500 mt-1 truncate max-w-xs">
+                                            {book.description || "Tavsif yo'q"}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="py-4 px-2">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedBook(book);
+                                            setLibraryCount(book.libraryCount || 0);
+                                            setLibraryModalOpen(true);
+                                        }}
+                                        className={`
                                             px-3 py-1 rounded-full text-sm font-semibold
                                             ${book.isHaveLibrary
-                                        ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                        : "bg-red-100 text-red-700 hover:bg-red-200"}
+                                                ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                                : "bg-red-100 text-red-700 hover:bg-red-200"}
                                         `}
-                                >
-                                    {book.isHaveLibrary ? book.libraryCount : "Yo'q"}
-                                </button>
-                            </td>
-
-                            <td className="py-4 px-2">
-                                <div className="font-medium text-gray-900">{book.author || "Noma'lum"}</div>
-                            </td>
-                            <td className="py-4 px-2">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
-                                        {book.subject?.name || "Fan tanlanmagan"}
-                                    </span>
-                            </td>
-                            <td className="py-4 px-2">
-                                <div className="text-gray-700">{book.publisher || "Noma'lum"}</div>
-                            </td>
-                            <td className="py-4 px-2">
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => copyLink(book.id)}
-                                        className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition"
-                                        title="Havolani nusxalash"
                                     >
-                                        <FiCopy />
+                                        {book.isHaveLibrary ? book.libraryCount : "Yo'q"}
                                     </button>
-                                    <span className="text-xs text-gray-500 truncate max-w-xs">
+                                </td>
+
+                                <td className="py-4 px-2">
+                                    <div className="font-medium text-gray-900">{book.author || "Noma'lum"}</div>
+                                </td>
+                                <td className="py-4 px-2">
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                                        {book.subjectName || "Fan tanlanmagan"}
+                                    </span>
+                                </td>
+                                <td className="py-4 px-2">
+                                    <div className="text-gray-700">{book.publisher || "Noma'lum"}</div>
+                                </td>
+                                <td className="py-4 px-2">
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => copyLink(book.id)}
+                                            className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition"
+                                            title="Havolani nusxalash"
+                                        >
+                                            <FiCopy />
+                                        </button>
+                                        <span className="text-xs text-gray-500 truncate max-w-xs">
                                             .../{book.id}
                                         </span>
-                                </div>
-                            </td>
-                            <td className="py-4 px-2">
-                                <div className="flex items-center gap-4">
-                                    <Link
-                                        to={`/book/${book?.id}`}
-                                        className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition"
-                                        title="Ko'rish"
-                                    >
-                                        <FiEye />
-                                    </Link>
-                                    {/*<button*/}
-                                    {/*    onClick={() => handleEdit(book)}*/}
-                                    {/*    className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition"*/}
-                                    {/*    title="Tahrirlash"*/}
-                                    {/*>*/}
-                                    {/*    <FiEdit2 />*/}
-                                    {/*</button>*/}
-                                    <button
-                                        onClick={() => handleDelete(book.id, book.name)}
-                                        className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition"
-                                        title="O'chirish"
-                                    >
-                                        <FiTrash2 />
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
+                                    </div>
+                                </td>
+                                <td className="py-4 px-2">
+                                    <div className="flex items-center gap-4">
+                                        <Link
+                                            to={`/book/${book?.id}`}
+                                            className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition"
+                                            title="Ko'rish"
+                                        >
+                                            <FiEye />
+                                        </Link>
+                                        <button
+                                            onClick={() => handleEdit(book)}
+                                            className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition"
+                                            title="Tahrirlash"
+                                        >
+                                            <FiEdit2 />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(book.id, book.name)}
+                                            className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition"
+                                            title="O'chirish"
+                                        >
+                                            <FiTrash2 />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
@@ -553,8 +555,8 @@ const AdminBooks = () => {
                                 className={`
                                     w-full px-3 py-2 rounded-lg text-sm font-semibold mb-2
                                     ${book.isHaveLibrary
-                                    ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                    : "bg-red-100 text-red-700 hover:bg-red-200"}
+                                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                        : "bg-red-100 text-red-700 hover:bg-red-200"}
                                 `}
                             >
                                 {book.isHaveLibrary ? `Kutubxonada: ${book.libraryCount}` : "Kutubxonada yo'q"}
@@ -578,13 +580,13 @@ const AdminBooks = () => {
                                     </Link>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    {/*<button*/}
-                                    {/*    onClick={() => handleEdit(book)}*/}
-                                    {/*    className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition"*/}
-                                    {/*    title="Tahrirlash"*/}
-                                    {/*>*/}
-                                    {/*    <FiEdit2 className="w-4 h-4" />*/}
-                                    {/*</button>*/}
+                                    <button
+                                        onClick={() => handleEdit(book)}
+                                        className="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition"
+                                        title="Tahrirlash"
+                                    >
+                                        <FiEdit2 className="w-4 h-4" />
+                                    </button>
                                     <button
                                         onClick={() => handleDelete(book.id, book.name)}
                                         className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition"
@@ -765,11 +767,10 @@ const AdminBooks = () => {
                                                     setPageSize(size);
                                                     setCurrentPage(0);
                                                 }}
-                                                className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
-                                                    pageSize === size
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                                className={`px-3 py-1.5 rounded-lg text-sm font-medium ${pageSize === size
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                    }`}
                                             >
                                                 {size}
                                             </button>
@@ -806,7 +807,7 @@ const AdminBooks = () => {
                                                 className={`p-2 rounded-lg ${currentPage === 0
                                                     ? 'text-gray-400 cursor-not-allowed'
                                                     : 'text-gray-700 hover:bg-gray-100'
-                                                }`}
+                                                    }`}
                                                 title="Birinchi sahifa"
                                             >
                                                 <FiChevronsLeft className="w-5 h-5" />
@@ -819,7 +820,7 @@ const AdminBooks = () => {
                                                 className={`p-2 rounded-lg ${currentPage === 0
                                                     ? 'text-gray-400 cursor-not-allowed'
                                                     : 'text-gray-700 hover:bg-gray-100'
-                                                }`}
+                                                    }`}
                                                 title="Oldingi sahifa"
                                             >
                                                 <FiChevronLeft className="w-5 h-5" />
@@ -833,7 +834,7 @@ const AdminBooks = () => {
                                                     className={`w-10 h-10 rounded-lg font-medium ${currentPage === pageNum
                                                         ? 'bg-blue-600 text-white'
                                                         : 'text-gray-700 hover:bg-gray-100'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {pageNum + 1}
                                                 </button>
@@ -846,7 +847,7 @@ const AdminBooks = () => {
                                                 className={`p-2 rounded-lg ${currentPage === totalPages - 1
                                                     ? 'text-gray-400 cursor-not-allowed'
                                                     : 'text-gray-700 hover:bg-gray-100'
-                                                }`}
+                                                    }`}
                                                 title="Keyingi sahifa"
                                             >
                                                 <FiChevronRight className="w-5 h-5" />
@@ -859,7 +860,7 @@ const AdminBooks = () => {
                                                 className={`p-2 rounded-lg ${currentPage === totalPages - 1
                                                     ? 'text-gray-400 cursor-not-allowed'
                                                     : 'text-gray-700 hover:bg-gray-100'
-                                                }`}
+                                                    }`}
                                                 title="Oxirgi sahifa"
                                             >
                                                 <FiChevronsRight className="w-5 h-5" />
