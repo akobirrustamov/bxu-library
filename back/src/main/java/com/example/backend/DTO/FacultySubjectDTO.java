@@ -19,4 +19,6 @@ public class FacultySubjectDTO {
     // ixtiyoriy (frontend uchun qulay)
     private String facultyName;
     private String subjectName;
+    private String description;
+    private Long bookCount;
 }

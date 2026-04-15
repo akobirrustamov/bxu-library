@@ -38,6 +38,10 @@ public class BooksController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody BookDTO dto) {
 
+        if (dto.getBookType() == null || dto.getBookType() < 1 || dto.getBookType() > 3) {
+            return ResponseEntity.badRequest().body("bookType must be one of: 1, 2, 3");
+        }
+
         Subject subject = subjectRepo.findById(dto.getSubjectId())
                 .orElseThrow(() -> new RuntimeException("Subject not found"));
 
@@ -53,6 +57,7 @@ public class BooksController {
                 .description(dto.getDescription())
                 .author(dto.getAuthor())
                 .publisher(dto.getPublisher())
+                .bookType(dto.getBookType())
                 .genre(dto.getGenre())
                 .path(dto.getPath())
                 .subject(subject)
@@ -101,14 +106,38 @@ public class BooksController {
        READ BY SUBJECT
     ========================= */
     @GetMapping("/by-subject/{subjectId}")
-    public ResponseEntity<List<BookDTO>> getBySubject(@PathVariable Integer subjectId) {
+    public ResponseEntity<List<BookDTO>> getBySubject(
+            @PathVariable Integer subjectId,
+            @RequestParam(required = false) Integer facultyId,
+            @RequestParam(required = false) Integer kurs
+    ) {
+
+        System.out.println("[BooksController] by-subject request: subjectId=" + subjectId + ", facultyId=" + facultyId + ", kurs=" + kurs);
+
+        final Integer resolvedKurs = facultyId != null
+            ? facultySubjectRepo
+            .findFirstByFaculty_IdAndSubject_Id(facultyId, subjectId)
+            .map(FacultySubject::getKurs)
+            .orElse(null)
+            : null;
 
         List<BookDTO> list = bookRepo.findBySubjectId(subjectId)
                 .stream()
-                .map(this::toDTO)
+            .map(book -> toDTO(book, resolvedKurs))
                 .collect(Collectors.toList());
 
-        System.out.print(list);
+        System.out.println("[BooksController] by-subject result count=" + list.size());
+        if (!list.isEmpty()) {
+            BookDTO sample = list.get(0);
+            System.out.println("[BooksController] sample dto keys: id=" + sample.getId()
+                    + ", subjectId=" + sample.getSubjectId()
+                    + ", kurs=" + sample.getKurs()
+                    + ", name=" + sample.getName());
+        }
+        if (kurs != null) {
+            System.out.println("[BooksController] NOTE: kurs parameter is accepted for compatibility; current resolvedKurs=" + resolvedKurs);
+        }
+
         return ResponseEntity.ok(list);
     }
 
@@ -151,6 +180,10 @@ public class BooksController {
             @RequestBody BookDTO dto
     ) {
 
+        if (dto.getBookType() == null || dto.getBookType() < 1 || dto.getBookType() > 3) {
+            return ResponseEntity.badRequest().body("bookType must be one of: 1, 2, 3");
+        }
+
         Book book = bookRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
@@ -161,6 +194,7 @@ public class BooksController {
         book.setDescription(dto.getDescription());
         book.setAuthor(dto.getAuthor());
         book.setPublisher(dto.getPublisher());
+        book.setBookType(dto.getBookType());
         book.setGenre(dto.getGenre());
         book.setPath(dto.getPath());
         book.setSubject(subject);
@@ -199,6 +233,10 @@ public class BooksController {
     }
 
     private BookDTO toDTO(Book book) {
+        return toDTO(book, null);
+    }
+
+    private BookDTO toDTO(Book book, Integer kurs) {
         return BookDTO.builder()
                 .id(book.getId())
                 .name(book.getName())
@@ -210,6 +248,8 @@ public class BooksController {
                 .createdAt(book.getCreatedAt())
                 .subjectId(book.getSubject().getId())
                 .subjectName(book.getSubject().getName())
+                .kurs(kurs)
+                .bookType(book.getBookType())
                 .isHaveLibrary(book.getIsHaveLibrary())
                 .libraryCount(book.getLibraryCount())
                 .imageId(book.getImage() != null ? book.getImage().getId() : null)

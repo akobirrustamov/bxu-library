@@ -3,24 +3,24 @@ import library1 from "../assets/library1.jpg";
 import library2 from "../assets/library2.jpg";
 import library3 from "../assets/library3.jpg";
 import bookImg from "../assets/newbook.jpg"
-import { FiSearch, FiChevronDown,FiEye,FiUser,FiFileText,FiFile, FiChevronUp, FiCheck, FiBookOpen, FiBook, FiUsers, FiDownload } from "react-icons/fi";
+import { FiSearch, FiChevronDown, FiEye, FiUser, FiFileText, FiFile, FiChevronUp, FiCheck, FiBookOpen, FiBook, FiUsers, FiDownload } from "react-icons/fi";
 import ApiCall from "../config";
 
 import { baseUrl } from "../config";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 /* =========================
    IMPROVED SEARCHABLE SELECT
 ========================= */
 const SearchableSelect = ({
-                              label,
-                              value,
-                              options,
-                              onChange,
-                              disabled,
-                              placeholder = "Tanlang...",
-                              searchPlaceholder = "Qidirish...",
-                          }) => {
+    label,
+    value,
+    options,
+    onChange,
+    disabled,
+    placeholder = "Tanlang...",
+    searchPlaceholder = "Qidirish...",
+}) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedOption, setSelectedOption] = useState(null);
@@ -67,13 +67,12 @@ const SearchableSelect = ({
                 type="button"
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 disabled={disabled}
-                className={`w-full h-12 px-4 rounded-xl border border-gray-300 bg-white flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:border-blue-400 hover:shadow-sm ${
-                    isOpen ? "ring-2 ring-blue-500 border-blue-500 shadow-md" : ""
-                } ${disabled ? "bg-gray-50" : "bg-white"}`}
+                className={`w-full h-12 px-4 rounded-xl border border-gray-300 bg-white flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:border-blue-400 hover:shadow-sm ${isOpen ? "ring-2 ring-blue-500 border-blue-500 shadow-md" : ""
+                    } ${disabled ? "bg-gray-50" : "bg-white"}`}
             >
-        <span className={`truncate ${selectedOption ? "text-gray-900 font-medium" : "text-gray-500"}`}>
-          {selectedOption ? selectedOption.name : placeholder}
-        </span>
+                <span className={`truncate ${selectedOption ? "text-gray-900 font-medium" : "text-gray-500"}`}>
+                    {selectedOption ? selectedOption.name : placeholder}
+                </span>
                 {isOpen ? (
                     <FiChevronUp className="text-gray-500 flex-shrink-0 ml-2" />
                 ) : (
@@ -113,9 +112,8 @@ const SearchableSelect = ({
                                         key={option.id}
                                         type="button"
                                         onClick={() => handleSelect(option)}
-                                        className={`w-full px-4 py-3 text-left flex items-center justify-between transition-all duration-200 hover:bg-blue-50 border-b border-gray-100 last:border-b-0 ${
-                                            isSelected ? "bg-blue-50 text-blue-700" : "text-gray-900"
-                                        }`}
+                                        className={`w-full px-4 py-3 text-left flex items-center justify-between transition-all duration-200 hover:bg-blue-50 border-b border-gray-100 last:border-b-0 ${isSelected ? "bg-blue-50 text-blue-700" : "text-gray-900"
+                                            }`}
                                     >
                                         <span className="truncate font-medium">{optionName}</span>
                                         {isSelected && <FiCheck className="text-blue-600 flex-shrink-0 ml-2" />}
@@ -146,7 +144,16 @@ const Hero = () => {
 
     const [educationId, setEducationId] = useState("");
     const [facultyId, setFacultyId] = useState("");
+    const [kursId, setKursId] = useState("");
     const [subjectId, setSubjectId] = useState("");
+    const [kursOptions] = useState([
+        { id: "", name: "Barcha kurslar" },
+        { id: 1, name: "1-kurs" },
+        { id: 2, name: "2-kurs" },
+        { id: 3, name: "3-kurs" },
+        { id: 4, name: "4-kurs" },
+        { id: 5, name: "5-kurs" },
+    ]);
     const [loading, setLoading] = useState(false);
 
     /* =========================
@@ -176,6 +183,7 @@ const Hero = () => {
 
         setLoading(true);
         setFacultyId("");
+        setKursId("");
         setSubjectId("");
         setSubjects([]);
         setBooks([]);
@@ -228,12 +236,27 @@ const Hero = () => {
         }
 
         setLoading(true);
-        ApiCall(`/api/v1/books/by-subject/${subjectId}`, "GET")
+        const query = new URLSearchParams();
+        if (facultyId) query.append("facultyId", facultyId);
+        if (kursId) query.append("kurs", kursId);
+
+        ApiCall(`/api/v1/books/by-subject/${subjectId}?${query.toString()}`, "GET")
             .then((res) => {
-                if (!res?.error) setBooks(res.data);
+                if (!res?.error) {
+                    console.log("[books/by-subject] request", {
+                        subjectId,
+                        facultyId,
+                        kursId,
+                    });
+                    console.log("[books/by-subject] response", {
+                        count: Array.isArray(res.data) ? res.data.length : 0,
+                        sample: Array.isArray(res.data) && res.data.length > 0 ? res.data[0] : null,
+                    });
+                    setBooks(res.data);
+                }
             })
             .finally(() => setLoading(false));
-    }, [subjectId]);
+            }, [subjectId, facultyId, kursId]);
     const handleDownload = async (file, name) => {
         try {
             if (!file) {
@@ -261,7 +284,7 @@ const Hero = () => {
             const url = window.URL.createObjectURL(blob);
 
             // Fayl nomini olish (name maydonidan)
-            const fileName = name+".pdf" || "downloaded_file.pdf";
+            const fileName = name + ".pdf" || "downloaded_file.pdf";
 
             // Yuklab olishni boshlash
             const link = document.createElement("a");
@@ -278,6 +301,17 @@ const Hero = () => {
             alert("Xatolik yuz berdi: " + error.message);
         }
     };
+    const displayedBooks = kursId ? books.filter((b) => b.kurs === kursId) : books;
+
+    // useEffect(() => {
+    //     console.log("[kurs-filter] state", {
+    //         kursId,
+    //         booksCount: books.length,
+    //         displayedCount: displayedBooks.length,
+    //         rawKursValues: books.map((b) => b.kurs),
+    //     });
+    // }, [kursId, books, displayedBooks]);
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50/30">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -299,7 +333,7 @@ const Hero = () => {
                             <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6 sm:my-8"></div>
 
                             {/* Searchable selects section */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <SearchableSelect
                                     label="Ta'lim turini tanlang"
                                     value={educationId}
@@ -328,6 +362,16 @@ const Hero = () => {
                                     placeholder="Masalan: Dasturlash asoslari"
                                     searchPlaceholder="Fanni qidirish..."
                                 />
+
+                                <SearchableSelect
+                                    label="Kursni tanlang (ixtiyoriy)"
+                                    value={kursId}
+                                    options={kursOptions}
+                                    onChange={setKursId}
+                                    disabled={!facultyId}
+                                    placeholder="Barcha kurslar"
+                                    searchPlaceholder="Kursni qidirish..."
+                                />
                             </div>
 
                             {/* Loading indicator */}
@@ -338,7 +382,7 @@ const Hero = () => {
                             )}
 
                             {/* Books section */}
-                            {books.length > 0 && (
+                            {displayedBooks.length > 0 && (
                                 <div className="mt-12">
                                     {/* Section Header */}
                                     <div className="mb-8">
@@ -351,11 +395,11 @@ const Hero = () => {
                                             </h2>
                                             <div className="flex items-center gap-4">
                                                 <span className="text-sm text-gray-500">
-                                                    Jami: <span className="font-bold text-blue-600">{books.length} ta</span>
+                                                    Jami: <span className="font-bold text-blue-600">{displayedBooks.length} ta</span>
                                                 </span>
                                                 <div className="h-8 w-px bg-gray-200"></div>
                                                 <button
-                                                    onClick={() => {/* Add sort functionality */}}
+                                                    onClick={() => {/* Add sort functionality */ }}
                                                     className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                                                 >
                                                     Saralash
@@ -367,7 +411,7 @@ const Hero = () => {
 
                                     {/* Books Grid */}
                                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                                        {books.map((book) => {
+                                        {displayedBooks.map((book) => {
                                             const imageUrl = book.imageId
                                                 ? `${baseUrl}/api/v1/file/img/${book.imageId}`
                                                 : "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
@@ -387,13 +431,13 @@ const Hero = () => {
                                                     {/* Premium Badge */}
                                                     {book.isPremium && (
                                                         <div className="absolute top-3 right-3 z-10">
-                                <span className="
+                                                            <span className="
                                     px-3 py-1 bg-gradient-to-r from-amber-400 to-amber-500
                                     text-xs font-bold text-white rounded-full
                                     shadow-lg
                                 ">
-                                    Premium
-                                </span>
+                                                                Premium
+                                                            </span>
                                                         </div>
                                                     )}
 
@@ -446,7 +490,7 @@ const Hero = () => {
                                         "
                                                                     title="Ko'rib chiqish"
                                                                 >
-                                                                    <Link to={"/book/"+book.id}>
+                                                                    <Link to={"/book/" + book.id}>
                                                                         <FiEye className="text-lg" />
 
                                                                     </Link>
@@ -457,13 +501,13 @@ const Hero = () => {
                                                         {/* Subject Badge */}
                                                         {book.subject?.name && (
                                                             <div className="absolute bottom-3 left-3">
-                                    <span className="
+                                                                <span className="
                                         px-3 py-1.5 bg-white/90 backdrop-blur-sm
                                         text-xs font-semibold text-gray-800
                                         rounded-full shadow-sm
                                     ">
-                                        {book.subject.name}
-                                    </span>
+                                                                    {book.subject.name}
+                                                                </span>
                                                             </div>
                                                         )}
                                                     </div>
@@ -483,8 +527,8 @@ const Hero = () => {
                                                             <div className="flex items-center gap-2 text-gray-600">
                                                                 <FiUser className="w-4 h-4 text-gray-400" />
                                                                 <span className="text-sm font-medium">
-                                        {book.author || "Muallif ko'rsatilmagan"}
-                                    </span>
+                                                                    {book.author || "Muallif ko'rsatilmagan"}
+                                                                </span>
                                                             </div>
                                                         </div>
 
@@ -557,7 +601,7 @@ const Hero = () => {
 
 
                             {/* No books message */}
-                            {subjectId && !loading && books.length === 0 && (
+                            {subjectId && !loading && displayedBooks.length === 0 && (
                                 <div className="mt-8 text-center py-8">
                                     <FiBook className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                                     <h3 className="text-lg font-medium text-gray-900">Kitoblar topilmadi</h3>

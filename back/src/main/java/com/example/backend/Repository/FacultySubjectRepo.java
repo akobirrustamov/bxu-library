@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FacultySubjectRepo extends JpaRepository<FacultySubject, Integer> {
 
@@ -13,6 +14,11 @@ public interface FacultySubjectRepo extends JpaRepository<FacultySubject, Intege
     List<FacultySubject> findAllSubjectsByFacultyId(Integer facultyId);
 
     boolean existsByFaculty_IdAndSubject_Id(Integer facultyId, Integer subjectId);
+
+    @Query(value = "SELECT * FROM faculty_subject WHERE faculty_id = :facultyId AND kurs = :kurs", nativeQuery = true)
+    List<FacultySubject> findAllByFacultyIdAndKurs(@Param("facultyId") Integer facultyId, @Param("kurs") Integer kurs);
+
+    Optional<FacultySubject> findFirstByFaculty_IdAndSubject_Id(Integer facultyId, Integer subjectId);
 
     // Jami bog‘lanishlar
     long count();

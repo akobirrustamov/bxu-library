@@ -35,6 +35,7 @@ public class Book {
     private String author;
 
     private String publisher;
+    private Integer bookType;
 
     private String genre;
     private String path;

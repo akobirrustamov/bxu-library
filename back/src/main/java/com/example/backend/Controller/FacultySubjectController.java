@@ -4,6 +4,7 @@ import com.example.backend.DTO.FacultySubjectDTO;
 import com.example.backend.Entity.Faculty;
 import com.example.backend.Entity.FacultySubject;
 import com.example.backend.Entity.Subject;
+import com.example.backend.Repository.BookRepo;
 import com.example.backend.Repository.FacultyRepo;
 import com.example.backend.Repository.FacultySubjectRepo;
 import com.example.backend.Repository.SubjectRepo;
@@ -11,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,6 +26,7 @@ public class FacultySubjectController {
     private final FacultySubjectRepo facultySubjectRepo;
     private final FacultyRepo facultyRepo;
     private final SubjectRepo subjectRepo;
+        private final BookRepo bookRepo;
 
     /* =========================
        CREATE
@@ -53,19 +57,54 @@ public class FacultySubjectController {
     }
 
     /* =========================
-       READ ALL BY FACULTY
+       READ ALL BY FACULTY (optional kurs filter)
     ========================= */
     @GetMapping("/by-faculty/{facultyId}")
     public ResponseEntity<List<FacultySubjectDTO>> getByFaculty(
-            @PathVariable Integer facultyId
+            @PathVariable Integer facultyId,
+            @RequestParam(required = false) Integer kurs
     ) {
-        List<FacultySubjectDTO> list = facultySubjectRepo
-                .findAllSubjectsByFacultyId(facultyId)
-                .stream()
-                .map(this::toDTO)
+        List<FacultySubject> list = (kurs != null)
+                ? facultySubjectRepo.findAllByFacultyIdAndKurs(facultyId, kurs)
+                : facultySubjectRepo.findAllSubjectsByFacultyId(facultyId);
+
+        List<Integer> subjectIds = list.stream()
+                .map(fs -> fs.getSubject().getId())
+                .distinct()
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(list);
+        Map<Integer, Long> bookCountBySubject = new HashMap<>();
+        if (!subjectIds.isEmpty()) {
+            List<Object[]> rows = bookRepo.countBooksBySubjectIds(subjectIds);
+            for (Object[] row : rows) {
+                Integer subjectId = (Integer) row[0];
+                Long count = (Long) row[1];
+                bookCountBySubject.put(subjectId, count);
+            }
+        }
+
+        return ResponseEntity.ok(
+                list.stream()
+                        .map(fs -> toDTO(fs, bookCountBySubject.getOrDefault(fs.getSubject().getId(), 0L)))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    /* =========================
+       KURS LIST BY FACULTY
+    ========================= */
+    @GetMapping("/by-faculty/{facultyId}/kurs-list")
+    public ResponseEntity<List<Integer>> getKursList(@PathVariable Integer facultyId) {
+        List<Integer> kursList = facultySubjectRepo
+                .findAllSubjectsByFacultyId(facultyId)
+                .stream()
+                .map(FacultySubject::getKurs)
+                .filter(k -> k != null)
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(kursList);
     }
 
     /* =========================
@@ -125,6 +164,10 @@ public class FacultySubjectController {
        ENTITY → DTO
     ========================= */
     private FacultySubjectDTO toDTO(FacultySubject fs) {
+                return toDTO(fs, 0L);
+        }
+
+        private FacultySubjectDTO toDTO(FacultySubject fs, Long bookCount) {
         return FacultySubjectDTO.builder()
                 .id(fs.getId())
                 .facultyId(fs.getFaculty().getId())
@@ -132,6 +175,8 @@ public class FacultySubjectController {
                 .kurs(fs.getKurs())
                 .facultyName(fs.getFaculty().getName())
                 .subjectName(fs.getSubject().getName())
+                                .description(fs.getSubject().getDescription())
+                                .bookCount(bookCount)
                 .build();
     }
 }

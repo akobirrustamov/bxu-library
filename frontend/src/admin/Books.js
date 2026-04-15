@@ -66,9 +66,16 @@ const AdminBooks = () => {
         genre: "",
         path: "",
         subjectId: "",
+        bookType: "",
         pdfId: null,
         imageId: null,
     });
+
+    const bookTypeOptions = [
+        { value: 1, label: "Asosiy adabiyot" },
+        { value: 2, label: "Qo'shimcha adabiyot" },
+        { value: 3, label: "Tayanchda mavjud emas adabiyot" },
+    ];
 
     /* =========================
        LOAD DATA WITH PAGINATION
@@ -254,12 +261,18 @@ const AdminBooks = () => {
        FORM HANDLERS
     ========================= */
     const handleSubmit = async () => {
-        if (!form.name || !form.subjectId || !form.pdfId) {
-            alert("Name, Subject va PDF majburiy");
+        if (!form.name || !form.subjectId || !form.pdfId || !form.bookType) {
+            alert("Name, Subject, Book Type va PDF majburiy");
             return;
         }
 
-        const payload = { ...form };
+        const payload = {
+            ...form,
+            subjectId: Number(form.subjectId),
+            bookType: Number(form.bookType),
+        };
+
+        console.log("[AdminBooks] submit payload", payload);
 
         try {
             if (editId) {
@@ -286,6 +299,7 @@ const AdminBooks = () => {
             genre: "",
             path: "",
             subjectId: "",
+            bookType: "",
             pdfId: null,
             imageId: null,
         });
@@ -302,6 +316,7 @@ const AdminBooks = () => {
             genre: b.genre || "",
             path: b.path || "",
             subjectId: b.subject?.id ?? b.subjectId ?? "",   // ← совместимо с Book и BookDTO
+            bookType: b.bookType ?? "",
             pdfId: b.pdf?.id ?? b.pdfId ?? null,             // ← совместимо с Book и BookDTO
             imageId: b.image?.id ?? b.imageId ?? null,       // ← совместимо с Book и BookDTO
         });
@@ -971,6 +986,32 @@ const AdminBooks = () => {
                                     }
                                     isSearchable
                                     placeholder="Fan tanlang"
+                                    className="react-select-container"
+                                    classNamePrefix="react-select"
+                                    styles={{
+                                        control: (base) => ({
+                                            ...base,
+                                            borderRadius: "0.75rem",
+                                            backgroundColor: "#f9fafb",
+                                            borderColor: "#d1d5db",
+                                            minHeight: "48px",
+                                        }),
+                                    }}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Adabiyot turi *
+                                </label>
+                                <Select
+                                    options={bookTypeOptions}
+                                    value={bookTypeOptions.find(o => o.value === Number(form.bookType)) || null}
+                                    onChange={(option) =>
+                                        setForm({ ...form, bookType: option ? option.value : "" })
+                                    }
+                                    isSearchable={false}
+                                    placeholder="Adabiyot turini tanlang"
                                     className="react-select-container"
                                     classNamePrefix="react-select"
                                     styles={{
