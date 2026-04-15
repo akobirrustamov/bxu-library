@@ -17,9 +17,11 @@ public class FacultySubject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne
-    Faculty faculty;
+    private Faculty faculty;
     @ManyToOne
-    Subject subject;
+    private Subject subject;
+    private Integer kurs;
+    
 
     public FacultySubject(Faculty faculty, Subject subject) {
         this.faculty = faculty;
