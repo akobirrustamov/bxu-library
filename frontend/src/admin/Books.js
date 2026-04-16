@@ -48,8 +48,6 @@ const AdminBooks = () => {
     });
     const [subjects, setSubjects] = useState([]);
     const [shelves, setShelves] = useState([]);
-    const [isAddingShelf, setIsAddingShelf] = useState(false);
-    const [newShelfName, setNewShelfName] = useState("");
 
     // Modal states
     const [openModal, setOpenModal] = useState(false);
@@ -57,6 +55,11 @@ const AdminBooks = () => {
     const [libraryModalOpen, setLibraryModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState(null);
     const [libraryCount, setLibraryCount] = useState(0);
+    const [shelfReportModalOpen, setShelfReportModalOpen] = useState(false);
+    const [selectedShelf, setSelectedShelf] = useState(null);
+    const [shelfReport, setShelfReport] = useState([]);
+    const [shelfReportLoading, setShelfReportLoading] = useState(false);
+    const [shelfReportError, setShelfReportError] = useState("");
 
     // View mode
     const [viewMode, setViewMode] = useState('table'); // 'table' or 'grid'
@@ -70,6 +73,7 @@ const AdminBooks = () => {
         path: "",
         subjectId: "",
         bookType: "",
+        shelfId: null,
         shelf: "",
         pdfId: null,
         imageId: null,
@@ -117,6 +121,8 @@ const AdminBooks = () => {
 
             if (!res?.error) {
                 setBooks(res.data.content || []);
+                console.log(res.data.content);
+
                 setTotalPages(res.data.totalPages || 0);
                 setTotalElements(res.data.totalElements || 0);
             }
@@ -155,13 +161,23 @@ const AdminBooks = () => {
         label: s.name
     }));
 
-    const shelfOptions = [...new Set([
-        ...shelves,
-        ...books.map((b) => b.shelf).filter(Boolean),
-        form.shelf,
-    ].filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b))
-        .map((shelf) => ({ value: shelf, label: shelf }));
+    const shelfOptions = shelves
+        .map((s) => ({
+            value: s.id != null ? `id-${s.id}` : `name-${s.name}`,
+            label: s.name,
+            shelfId: s.id,
+            shelfName: s.name,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+
+    const selectedShelfOption = shelfOptions.find((option) => {
+        if (form.shelfId != null) {
+            return option.shelfId === form.shelfId;
+        }
+        return option.shelfName === form.shelf;
+    }) || null;
+
+    const isShelfEntitySelected = Boolean(selectedShelfOption?.shelfId);
 
     /* =========================
        FILTER HANDLERS
@@ -192,19 +208,6 @@ const AdminBooks = () => {
             subjectId: null
         });
         setCurrentPage(0);
-    };
-
-    const handleAddShelf = () => {
-        const value = newShelfName.trim();
-        if (!value) return;
-
-        setShelves((prev) => {
-            if (prev.includes(value)) return prev;
-            return [...prev, value].sort((a, b) => a.localeCompare(b));
-        });
-        setForm((prev) => ({ ...prev, shelf: value }));
-        setNewShelfName("");
-        setIsAddingShelf(false);
     };
 
     /* =========================
@@ -337,12 +340,11 @@ const AdminBooks = () => {
             path: "",
             subjectId: "",
             bookType: "",
+            shelfId: null,
             shelf: "",
             pdfId: null,
             imageId: null,
         });
-        setIsAddingShelf(false);
-        setNewShelfName("");
         setUploadProgress({ pdf: 0, image: 0 });
     };
 
@@ -357,6 +359,7 @@ const AdminBooks = () => {
             path: b.path || "",
             subjectId: b.subject?.id ?? b.subjectId ?? "",   // ← совместимо с Book и BookDTO
             bookType: b.bookType ?? "",
+            shelfId: b.shelfId ?? null,
             shelf: b.shelf || "",
             pdfId: b.pdf?.id ?? b.pdfId ?? null,             // ← совместимо с Book и BookDTO
             imageId: b.image?.id ?? b.imageId ?? null,       // ← совместимо с Book и BookDTO
@@ -390,6 +393,31 @@ const AdminBooks = () => {
             loadBooks();
         } catch (error) {
             console.error("Error deleting book:", error);
+        }
+    };
+
+    const openShelfReport = async (shelfId, shelfName) => {
+        if (!shelfName) return;
+        setSelectedShelf({ id: shelfId, name: shelfName });
+        setShelfReport([]);
+        setShelfReportError("");
+        setShelfReportLoading(true);
+        try {
+            const params = shelfId ? { shelfId } : { shelfName };
+            const res = await ApiCall("/api/v1/books/shelf-report", "GET", null, params);
+            if (!res?.error) {
+                setShelfReport(res.data || []);
+            } else {
+                setShelfReport([]);
+                setShelfReportError("Shelf report loading error");
+            }
+        } catch (error) {
+            console.error("Error loading shelf report:", error);
+            setShelfReport([]);
+            setShelfReportError("Shelf report loading error");
+        } finally {
+            setShelfReportLoading(false);
+            setShelfReportModalOpen(true);
         }
     };
 
@@ -463,6 +491,7 @@ const AdminBooks = () => {
                             </th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Muallif</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Fan</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Javon</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Nashriyot</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Havola</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Amallar</th>
@@ -509,6 +538,11 @@ const AdminBooks = () => {
                                 <td className="py-4 px-2">
                                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
                                         {book.subjectName || "Fan tanlanmagan"}
+                                    </span>
+                                </td>
+                                <td className="py-4 px-2">
+                                    <span className="inline-flex items-center px-3 py-1 text-purple-900 rounded-full text-sm">
+                                        {book.shelf || "-"}
                                     </span>
                                 </td>
                                 <td className="py-4 px-2">
@@ -1068,27 +1102,18 @@ const AdminBooks = () => {
                             </div>
 
                             <div>
-                                <div className="flex items-center justify-between mb-2">
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Kitob polkasi
-                                    </label>
-                                    {!isAddingShelf ? (
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsAddingShelf(true)}
-                                            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
-                                        >
-                                            <FiPlus className="w-4 h-4" />
-                                            Polka qo'shish
-                                        </button>
-                                    ) : null}
-                                </div>
-
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Kitob joylangan polkasi
+                                </label>
                                 <Select
                                     options={shelfOptions}
-                                    value={shelfOptions.find(o => o.value === form.shelf) || null}
+                                    value={selectedShelfOption}
                                     onChange={(option) =>
-                                        setForm({ ...form, shelf: option ? option.value : "" })
+                                        setForm({
+                                            ...form,
+                                            shelfId: option ? option.shelfId : null,
+                                            shelf: option ? option.shelfName : "",
+                                        })
                                     }
                                     isSearchable
                                     isClearable
@@ -1105,41 +1130,6 @@ const AdminBooks = () => {
                                         }),
                                     }}
                                 />
-
-                                {isAddingShelf && (
-                                    <div className="mt-3 flex items-center gap-2">
-                                        <input
-                                            type="text"
-                                            value={newShelfName}
-                                            onChange={(e) => setNewShelfName(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter") {
-                                                    e.preventDefault();
-                                                    handleAddShelf();
-                                                }
-                                            }}
-                                            placeholder="Masalan: A1 yoki B2"
-                                            className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={handleAddShelf}
-                                            className="px-3 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-                                        >
-                                            Qo'shish
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setIsAddingShelf(false);
-                                                setNewShelfName("");
-                                            }}
-                                            className="px-3 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition"
-                                        >
-                                            Bekor
-                                        </button>
-                                    </div>
-                                )}
                             </div>
 
                             {/* Description */}

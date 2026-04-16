@@ -36,7 +36,10 @@ public class Book {
 
     private String publisher;
     private Integer bookType;
-    private String shelf;
+
+    @ManyToOne
+    @JoinColumn(name = "shelf_id")
+    private Shelf shelf;
 
     private String genre;
     private String path;

@@ -48,7 +48,7 @@ const AdminFaculty = () => {
             const res = await ApiCall("/api/v1/faculty", "GET");
             if (!res?.error) {
                 setFaculties(res.data);
-                calculateStats(res.data);
+                // calculateStats(res.data);
             }
         } catch (error) {
             console.error("Error loading faculties:", error);
@@ -56,6 +56,11 @@ const AdminFaculty = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (!faculties.length || !educationTypes.length) return;
+        calculateStats(faculties);
+    }, [faculties, educationTypes]); // ← реагирует когда оба загружены
 
     const loadEducationTypes = async () => {
         try {
@@ -67,8 +72,11 @@ const AdminFaculty = () => {
     };
 
     useEffect(() => {
-        loadFaculties();
-        loadEducationTypes();
+        const loadAll = async () => {
+            await loadEducationTypes(); // сначала типы
+            await loadFaculties();      // потом факультеты
+        };
+        loadAll();
     }, []);
 
     useEffect(() => {
@@ -77,12 +85,8 @@ const AdminFaculty = () => {
 
     const calculateStats = (data) => {
         const total = data.length;
-        const bachelor = data.filter(f =>
-            educationTypes.find(e => e.id === f.educationTypeId)?.name === "Bakalavr"
-        ).length;
-        const master = data.filter(f =>
-            educationTypes.find(e => e.id === f.educationTypeId)?.name === "Magistr"
-        ).length;
+        const bachelor = data.filter(f => f.educationType?.name === "Bakalavr").length;
+        const master = data.filter(f => f.educationType?.name === "Magistr").length;
 
         setStats({ total, bachelor, master });
     };
@@ -154,7 +158,7 @@ const AdminFaculty = () => {
         setForm({
             code: faculty.code,
             name: faculty.name,
-            educationTypeId: faculty.educationTypeId,
+            educationTypeId: faculty.educationType?.id,
         });
         setOpenModal(true);
     };
@@ -172,18 +176,16 @@ const AdminFaculty = () => {
         }
     };
 
-    const getEducationTypeName = (id) => {
-        const type = educationTypes.find(e => e.id === id);
-        return type ? type.name : "Noma'lum";
+    const getEducationTypeName = (faculty) => {
+        return faculty.educationType?.name ?? "Noma'lum";
     };
 
-    const getEducationTypeColor = (id) => {
-        const type = educationTypes.find(e => e.id === id);
-        if (!type) return "gray";
-
-        return type.name === "Bakalavr" ? "blue" :
-            type.name === "Magistr" ? "purple" : "gray";
+    const getEducationTypeColor = (faculty) => {
+        const name = faculty.educationType?.name;
+        if (!name) return "gray";
+        return name === "Bakalavr" ? "blue" : name === "Magistr" ? "purple" : "gray";
     };
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -228,6 +230,7 @@ const AdminFaculty = () => {
                                         <p className="text-3xl font-bold text-gray-900 mt-2">{stats.bachelor}</p>
                                     </div>
                                     <div className="p-3 bg-green-100 rounded-xl">
+                                        <FiBookOpen className="text-green-600 text-2xl" />
                                     </div>
                                 </div>
                             </div>
@@ -331,15 +334,15 @@ const AdminFaculty = () => {
                                                         </div>
                                                         <span className={`
                               inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-                              ${getEducationTypeColor(faculty.educationTypeId) === "blue"
-                                                            ? "bg-blue-100 text-blue-800"
-                                                            : getEducationTypeColor(faculty.educationTypeId) === "purple"
-                                                                ? "bg-purple-100 text-purple-800"
-                                                                : "bg-gray-100 text-gray-800"
-                                                        }
+                              ${getEducationTypeColor(faculty) === "blue"
+                                                                ? "bg-blue-100 text-blue-800"
+                                                                : getEducationTypeColor(faculty) === "purple"
+                                                                    ? "bg-purple-100 text-purple-800"
+                                                                    : "bg-gray-100 text-gray-800"
+                                                            }
                             `}>
-                              {getEducationTypeName(faculty.educationTypeId)}
-                            </span>
+                                                            {getEducationTypeName(faculty)}
+                                                        </span>
                                                     </div>
 
                                                     {/* Content */}
@@ -518,8 +521,8 @@ const AdminFaculty = () => {
                                             </h5>
                                             {form.educationTypeId && (
                                                 <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                          {educationTypes.find(e => e.id === form.educationTypeId)?.name || "Tur"}
-                        </span>
+                                                    {educationTypes.find(e => String(e.id) === String(form.educationTypeId))?.name || "Tur"}
+                                                </span>
                                             )}
                                         </div>
                                         {form.code && (
@@ -547,9 +550,9 @@ const AdminFaculty = () => {
                     px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold 
                     rounded-xl transition shadow-lg
                     ${!form.code.trim() || !form.name.trim() || !form.educationTypeId
-                                        ? 'opacity-50 cursor-not-allowed'
-                                        : 'hover:from-blue-700 hover:to-indigo-700'
-                                    }
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : 'hover:from-blue-700 hover:to-indigo-700'
+                                        }
                   `}
                                 >
                                     {editId ? "Saqlash" : "Qo'shish"}
@@ -588,7 +591,7 @@ const AdminFaculty = () => {
                                         <span>Kod: {confirmDelete.code}</span>
                                     </div>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <span>Ta'lim turi: {getEducationTypeName(confirmDelete.educationTypeId)}</span>
+                                        <span>Ta'lim turi: {getEducationTypeName(confirmDelete)}</span>
                                     </div>
                                 </div>
                             </div>

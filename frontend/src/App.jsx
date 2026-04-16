@@ -14,6 +14,7 @@ import OneBook from "./pages/OneBook";
 import OneBadiiy from "./pages/OneBadiiy";
 import AdminSubjectBooks from "./admin/AdminSubjectBooks";
 import AdminIlmiy from "./admin/AdminIlmiy";
+import AdminShelves from "./admin/Shelves";
 
 function App() {
     return (
@@ -27,16 +28,17 @@ function App() {
             <Route path="/admin/login" element={<Login />} />
             <Route path="/admin/dashboard" element={<AdminHome />} />
             <Route path="/admin/books" element={<AdminBooks />} />
+            <Route path="/admin/shelves" element={<AdminShelves />} />
             <Route path="/admin/faculty" element={<AdminFaculty />} />
             <Route path="/admin/subjects" element={<AdminSubject />} />
             <Route path="/admin/ilmiy" element={<AdminIlmiy />} />
 
             <Route path="/admin/faculty-subjects" element={<AdminFacultySubject />} />
-                <Route path="/admin/faculty-statistic/:facultyId" element={<AdminFacultyDetails />} />
+            <Route path="/admin/faculty-statistic/:facultyId" element={<AdminFacultyDetails />} />
 
-                <Route path="/admin/subject/:subjectId" element={<AdminSubjectBooks />} />
+            <Route path="/admin/subject/:subjectId" element={<AdminSubjectBooks />} />
 
-                <Route path="/admin/badiiy" element={<AdminBadiiy />} />
+            <Route path="/admin/badiiy" element={<AdminBadiiy />} />
             <Route path="/admin/audio" element={<AdminAudio />} />
             {/* Redirect */}
             <Route path="/admin" element={<Navigate to="/admin/login" replace />} />

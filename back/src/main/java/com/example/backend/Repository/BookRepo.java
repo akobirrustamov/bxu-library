@@ -74,12 +74,23 @@ public interface BookRepo extends JpaRepository<Book, Integer> {
     Integer  bookLibraryCount();
 
     @Query("""
-        SELECT DISTINCT b.shelf
+        SELECT b.shelf.name, COALESCE(SUM(b.libraryCount), 0)
         FROM Book b
-        WHERE b.shelf IS NOT NULL AND TRIM(b.shelf) <> ''
-        ORDER BY b.shelf
+        WHERE b.shelf IS NOT NULL
+        GROUP BY b.shelf.name
     """)
-    List<String> findDistinctShelves();
+    List<Object[]> countBooksByShelfName();
+
+    @Query("""
+        SELECT b.name, COUNT(b.id), COALESCE(SUM(b.libraryCount), 0)
+        FROM Book b
+        WHERE b.shelf.id = :shelfId
+        GROUP BY b.name
+        ORDER BY b.name
+    """)
+    List<Object[]> countBooksByShelfIdGroupedByTitle(@Param("shelfId") Integer shelfId);
+
+    List<Book> findAllByShelf_Id(Integer shelfId);
 
 
     @Query("""

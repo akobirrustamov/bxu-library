@@ -1,8 +1,11 @@
 package com.example.backend.Controller;
 
 import com.example.backend.DTO.BookDTO;
+import com.example.backend.DTO.ShelfTitleCountDTO;
 import com.example.backend.Entity.*;
 import com.example.backend.Repository.*;
+import com.example.backend.Repository.ShelfRepo;
+import com.example.backend.DTO.ShelfDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -15,8 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,6 +38,7 @@ public class BooksController {
     private final FacultySubjectRepo facultySubjectRepo;
     private final FacultyRepo facultyRepo;
     private final AttachmentRepo attachmentRepo;
+    private final ShelfRepo shelfRepo;
 
     /* =========================
        CREATE
@@ -43,7 +51,7 @@ public class BooksController {
         }
 
         Subject subject = subjectRepo.findById(dto.getSubjectId())
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Subject not found"));
 
         if (bookRepo.existsByNameAndSubject(dto.getName(), subject)) {
             return ResponseEntity.badRequest().body("Book already exists for this subject");
@@ -52,13 +60,15 @@ public class BooksController {
         Attachment image = getAttachment(dto.getImageId());
         Attachment pdf = getAttachment(dto.getPdfId());
 
+        Shelf shelf = findOrCreateShelf(dto.getShelf());
+
         Book book = Book.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .author(dto.getAuthor())
                 .publisher(dto.getPublisher())
                 .bookType(dto.getBookType())
-            .shelf(normalizeShelf(dto.getShelf()))
+                .shelf(shelf)
                 .genre(dto.getGenre())
                 .path(dto.getPath())
                 .subject(subject)
@@ -196,7 +206,8 @@ public class BooksController {
         book.setAuthor(dto.getAuthor());
         book.setPublisher(dto.getPublisher());
         book.setBookType(dto.getBookType());
-        book.setShelf(normalizeShelf(dto.getShelf()));
+        Shelf shelf = resolveShelf(dto);
+        book.setShelf(shelf);
         book.setGenre(dto.getGenre());
         book.setPath(dto.getPath());
         book.setSubject(subject);
@@ -226,8 +237,88 @@ public class BooksController {
     }
 
     @GetMapping("/shelves")
-    public ResponseEntity<List<String>> getShelves() {
-        return ResponseEntity.ok(bookRepo.findDistinctShelves());
+    public ResponseEntity<List<ShelfDTO>> getShelves() {
+        Map<String, Long> shelfCounts = new HashMap<>();
+
+        for (Object[] row : bookRepo.countBooksByShelfName()) {
+            String name = (String) row[0];
+            Long count = (Long) row[1];
+            shelfCounts.put(name, count);
+        }
+
+        List<ShelfDTO> shelves = shelfRepo.findAllByOrderByNameAsc()
+                .stream()
+                .map(s -> ShelfDTO.builder()
+                        .id(s.getId())
+                        .name(s.getName())
+                        .count(shelfCounts.getOrDefault(s.getName(), 0L))
+                        .build())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(shelves);
+    }
+
+    @GetMapping("/shelf-report")
+    public ResponseEntity<List<ShelfTitleCountDTO>> getShelfReport(
+            @RequestParam Integer shelfId
+    ) {
+        List<ShelfTitleCountDTO> report = new java.util.ArrayList<>();
+
+        for (Object[] row : bookRepo.countBooksByShelfIdGroupedByTitle(shelfId)) {
+            report.add(ShelfTitleCountDTO.builder()
+                    .title((String) row[0])
+                    .count((Long) row[2])
+                    .build());
+        }
+
+        return ResponseEntity.ok(report);
+    }
+
+    @PostMapping("/shelves")
+    public ResponseEntity<?> createShelf(@RequestBody ShelfDTO dto) {
+        String normalized = normalizeShelf(dto.getName());
+        if (normalized == null) {
+            return ResponseEntity.badRequest().body("Shelf name is required");
+        }
+
+        if (shelfRepo.existsByName(normalized)) {
+            return ResponseEntity.badRequest().body("Shelf already exists");
+        }
+
+        Shelf shelf = shelfRepo.save(Shelf.builder().name(normalized).build());
+        return ResponseEntity.ok(ShelfDTO.builder().id(shelf.getId()).name(shelf.getName()).build());
+    }
+
+    @PutMapping("/shelves/{id}")
+    public ResponseEntity<?> updateShelf(@PathVariable Integer id, @RequestBody ShelfDTO dto) {
+        Shelf shelf = shelfRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Shelf not found"));
+
+        String normalized = normalizeShelf(dto.getName());
+        if (!shelf.getName().equals(normalized) && shelfRepo.existsByName(normalized)) {
+            return ResponseEntity.badRequest().body("Shelf already exists");
+        }
+
+        shelf.setName(normalized);
+        shelfRepo.save(shelf);
+        return ResponseEntity.ok(ShelfDTO.builder().id(shelf.getId()).name(shelf.getName()).build());
+    }
+
+    @DeleteMapping("/shelves/{id}")
+    public ResponseEntity<?> deleteShelf(@PathVariable Integer id) {
+        Shelf shelf = shelfRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Shelf not found"));
+
+        List<Book> books = bookRepo.findAllByShelf_Id(id);
+        for (Book book : books) {
+            book.setShelf(null);
+        }
+        if (!books.isEmpty()) {
+            bookRepo.saveAll(books);
+        }
+
+        shelfRepo.deleteById(id);
+        return ResponseEntity.ok("Shelf deleted successfully");
     }
 
     /* =========================
@@ -237,6 +328,14 @@ public class BooksController {
         if (id == null) return null;
         return attachmentRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Attachment not found"));
+    }
+
+    private Shelf resolveShelf(BookDTO dto) {
+        if (dto.getShelfId() != null) {
+            return shelfRepo.findById(dto.getShelfId())
+                    .orElseThrow(() -> new IllegalArgumentException("Shelf not found"));
+        }
+        return findOrCreateShelf(dto.getShelf());
     }
 
     private BookDTO toDTO(Book book) {
@@ -257,7 +356,8 @@ public class BooksController {
                 .subjectName(book.getSubject().getName())
                 .kurs(kurs)
                 .bookType(book.getBookType())
-                .shelf(book.getShelf())
+                .shelfId(book.getShelf() != null ? book.getShelf().getId() : null)
+                .shelf(book.getShelf() != null ? book.getShelf().getName() : null)
                 .isHaveLibrary(book.getIsHaveLibrary())
                 .libraryCount(book.getLibraryCount())
                 .imageId(book.getImage() != null ? book.getImage().getId() : null)
@@ -267,8 +367,35 @@ public class BooksController {
 
     private String normalizeShelf(String shelf) {
         if (shelf == null) return null;
-        String trimmed = shelf.trim();
-        return trimmed.isEmpty() ? null : trimmed;
+        String normalized = shelf.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
+        if (normalized.isEmpty()) return null;
+        if (!normalized.matches("^[A-Z]\\d+$")) {
+            throw new IllegalArgumentException("Shelf must consist of a Latin uppercase letter followed by digit(s), e.g. A1");
+        }
+        return normalized;
+    }
+
+    private String normalizeShelfSafe(String shelf) {
+        if (shelf == null) return null;
+        try {
+            return normalizeShelf(shelf);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleInvalidShelf(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    private Shelf findOrCreateShelf(String shelfName) {
+        String normalized = normalizeShelf(shelfName);
+        if (normalized == null) {
+            return null;
+        }
+        return shelfRepo.findByName(normalized)
+                .orElseGet(() -> shelfRepo.save(Shelf.builder().name(normalized).build()));
     }
 
 
