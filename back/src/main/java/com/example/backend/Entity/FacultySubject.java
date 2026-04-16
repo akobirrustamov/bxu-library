@@ -21,7 +21,7 @@ public class FacultySubject {
     @ManyToOne
     private Subject subject;
     private Integer kurs;
-    
+
 
     public FacultySubject(Faculty faculty, Subject subject) {
         this.faculty = faculty;
