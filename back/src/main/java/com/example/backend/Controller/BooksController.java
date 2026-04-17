@@ -46,7 +46,7 @@ public class BooksController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody BookDTO dto) {
 
-        if (dto.getBookType() == null || dto.getBookType() < 1 || dto.getBookType() > 3) {
+        if (dto.getBookType() != null && (dto.getBookType() < 1 || dto.getBookType() > 3)) {
             return ResponseEntity.badRequest().body("bookType must be one of: 1, 2, 3");
         }
 
@@ -191,7 +191,7 @@ public class BooksController {
             @RequestBody BookDTO dto
     ) {
 
-        if (dto.getBookType() == null || dto.getBookType() < 1 || dto.getBookType() > 3) {
+        if (dto.getBookType() != null && (dto.getBookType() < 1 || dto.getBookType() > 3)) {
             return ResponseEntity.badRequest().body("bookType must be one of: 1, 2, 3");
         }
 

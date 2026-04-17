@@ -301,15 +301,15 @@ const AdminBooks = () => {
        FORM HANDLERS
     ========================= */
     const handleSubmit = async () => {
-        if (!form.name || !form.subjectId || !form.pdfId || !form.bookType) {
-            alert("Name, Subject, Book Type va PDF majburiy");
+        if (!form.name || !form.subjectId || !form.pdfId) {
+            alert("Name, Subject va PDF majburiy");
             return;
         }
 
         const payload = {
             ...form,
             subjectId: Number(form.subjectId),
-            bookType: Number(form.bookType),
+            bookType: form.bookType ? Number(form.bookType) : null,
         };
 
         console.log("[AdminBooks] submit payload", payload);
@@ -1077,7 +1077,7 @@ const AdminBooks = () => {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Adabiyot turi *
+                                    Adabiyot turi
                                 </label>
                                 <Select
                                     options={bookTypeOptions}

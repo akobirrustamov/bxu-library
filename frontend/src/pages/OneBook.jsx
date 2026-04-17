@@ -47,7 +47,7 @@ const OneBook = () => {
             if (!res?.error) {
                 setBook(res.data);
                 console.log(res.data)
-                await fetchRelatedBooks(res.data?.subject.id)
+                await fetchRelatedBooks(res.data?.subject?.id)
             } else {
                 setError("Kitob topilmadi");
             }
@@ -226,8 +226,8 @@ const OneBook = () => {
         );
     }
 
-    const imageUrl = book.image.id
-        ? `${baseUrl}/api/v1/file/img/${book.image.id}`
+    const imageUrl = book?.image?.id
+        ? `${baseUrl}/api/v1/file/img/${book?.image?.id}`
         : "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
 
     return (
@@ -258,6 +258,10 @@ const OneBook = () => {
                                                 src={imageUrl}
                                                 alt={book.name}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                onError={(e) => {
+                                                    e.currentTarget.onerror = null;
+                                                    e.currentTarget.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+                                                }}
                                             />
                                         </div>
 
@@ -299,8 +303,8 @@ const OneBook = () => {
                                 <div className="mb-6">
                                     {book.subject?.name && (
                                         <span className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-4">
-                      {book.subject.name}
-                    </span>
+                                            {book.subject.name}
+                                        </span>
                                     )}
                                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                                         {book.name}
@@ -351,7 +355,7 @@ const OneBook = () => {
                                             </div>
                                             <div className="flex justify-between">
                                                 <span className="text-gray-600">Fan:</span>
-                                                <span className="font-medium">{book.subject.name || "Noma'lum"}</span>
+                                                <span className="font-medium">{book.subject?.name || "Noma'lum"}</span>
                                             </div>
 
                                         </div>
@@ -441,7 +445,7 @@ const OneBook = () => {
                                             title="Telegram'da ulashish"
                                         >
                                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.06-.2-.07-.06-.17-.04-.24-.02-.1.02-1.79 1.14-5.06 3.34-.48.33-.91.5-1.3.49-.43-.01-1.27-.25-1.89-.46-.76-.26-1.37-.4-1.32-.84.03-.24.32-.49.89-.76 3.47-1.51 5.78-2.51 6.94-3.01 3.05-1.32 3.68-1.55 4.1-1.56.09 0 .29.02.42.12.1.08.13.19.14.27-.01.06.01.28 0 0z"/>
+                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.06-.2-.07-.06-.17-.04-.24-.02-.1.02-1.79 1.14-5.06 3.34-.48.33-.91.5-1.3.49-.43-.01-1.27-.25-1.89-.46-.76-.26-1.37-.4-1.32-.84.03-.24.32-.49.89-.76 3.47-1.51 5.78-2.51 6.94-3.01 3.05-1.32 3.68-1.55 4.1-1.56.09 0 .29.02.42.12.1.08.13.19.14.27-.01.06.01.28 0 0z" />
                                             </svg>
                                         </button>
 
@@ -486,6 +490,10 @@ const OneBook = () => {
                                             src={relatedBook.imageId ? `${baseUrl}/api/v1/file/img/${relatedBook.imageId}` : "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"}
                                             alt={relatedBook.name}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80";
+                                            }}
                                         />
                                     </div>
                                     <div className="p-4">
