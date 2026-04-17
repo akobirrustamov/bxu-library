@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +16,7 @@ public class FacultySubjectDTO {
     private Integer id;
     private Integer facultyId;
     private Integer subjectId;
-    private Integer kurs;
+    private List<Integer> kurs;
 
     // ixtiyoriy (frontend uchun qulay)
     private String facultyName;

@@ -1,0 +1,241 @@
+{
+  "info": {
+    "name": "BXU Library - FacultySubject API (Kurs Changes)",
+    "description": "Updated API collection for FacultySubject endpoints with kurs field changed from Integer to List<Integer>",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "item": [
+    {
+      "name": "Create FacultySubject (Single Kurs)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"facultyId\": 1,\n  \"subjectId\": 5,\n  \"kurs\": [1]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/faculty-subject",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "faculty-subject"]
+        },
+        "description": "Create a new FacultySubject with single kurs value (as array)"
+      }
+    },
+    {
+      "name": "Create FacultySubject (Multiple Kurs)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"facultyId\": 1,\n  \"subjectId\": 5,\n  \"kurs\": [1, 2, 3]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/faculty-subject",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "faculty-subject"]
+        },
+        "description": "Create a new FacultySubject with multiple kurs values"
+      }
+    },
+    {
+      "name": "Update FacultySubject",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"facultyId\": 1,\n  \"subjectId\": 5,\n  \"kurs\": [1, 2, 3, 4]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/faculty-subject/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "faculty-subject", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1",
+              "description": "FacultySubject ID"
+            }
+          ]
+        },
+        "description": "Update existing FacultySubject with new kurs array"
+      }
+    },
+    {
+      "name": "Get FacultySubject by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/faculty-subject/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "faculty-subject", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1",
+              "description": "FacultySubject ID"
+            }
+          ]
+        },
+        "description": "Get a single FacultySubject by ID. Returns kurs as array."
+      }
+    },
+    {
+      "name": "Get All Subjects by Faculty",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/faculty-subject/by-faculty/:facultyId",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "faculty-subject", "by-faculty", ":facultyId"],
+          "variable": [
+            {
+              "key": "facultyId",
+              "value": "1",
+              "description": "Faculty ID"
+            }
+          ]
+        },
+        "description": "Get all subjects for a faculty. Each subject has kurs as array."
+      }
+    },
+    {
+      "name": "Get Subjects by Faculty (Filtered by Kurs)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/faculty-subject/by-faculty/:facultyId?kurs=2",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "faculty-subject", "by-faculty", ":facultyId"],
+          "query": [
+            {
+              "key": "kurs",
+              "value": "2",
+              "description": "Filter by kurs value (returns subjects where kurs array contains this value)"
+            }
+          ],
+          "variable": [
+            {
+              "key": "facultyId",
+              "value": "1",
+              "description": "Faculty ID"
+            }
+          ]
+        },
+        "description": "Get subjects filtered by kurs. Returns only subjects where kurs array contains the specified value."
+      }
+    },
+    {
+      "name": "Get Kurs List by Faculty",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/faculty-subject/by-faculty/:facultyId/kurs-list",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "faculty-subject", "by-faculty", ":facultyId", "kurs-list"],
+          "variable": [
+            {
+              "key": "facultyId",
+              "value": "1",
+              "description": "Faculty ID"
+            }
+          ]
+        },
+        "description": "Get flattened, unique, sorted list of all kurs values for the faculty. Example: [1, 2, 3, 4]"
+      }
+    },
+    {
+      "name": "Delete FacultySubject",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/faculty-subject/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "faculty-subject", ":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": "1",
+              "description": "FacultySubject ID"
+            }
+          ]
+        },
+        "description": "Delete a FacultySubject by ID"
+      }
+    },
+    {
+      "name": "Get Books by Subject (with facultyId and kurs)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/books/by-subject/:subjectId?facultyId=1&kurs=2",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "books", "by-subject", ":subjectId"],
+          "query": [
+            {
+              "key": "facultyId",
+              "value": "1",
+              "description": "Optional: Faculty ID to resolve kurs"
+            },
+            {
+              "key": "kurs",
+              "value": "2",
+              "description": "Optional: Preferred kurs value"
+            }
+          ],
+          "variable": [
+            {
+              "key": "subjectId",
+              "value": "5",
+              "description": "Subject ID"
+            }
+          ]
+        },
+        "description": "Get books by subject. When facultyId is provided, resolves kurs from FacultySubject. Note: BookDTO still returns single kurs value (Integer), not array."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
+

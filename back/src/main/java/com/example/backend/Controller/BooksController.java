@@ -125,12 +125,28 @@ public class BooksController {
 
         System.out.println("[BooksController] by-subject request: subjectId=" + subjectId + ", facultyId=" + facultyId + ", kurs=" + kurs);
 
-        final Integer resolvedKurs = facultyId != null
-            ? facultySubjectRepo
-            .findFirstByFaculty_IdAndSubject_Id(facultyId, subjectId)
-            .map(FacultySubject::getKurs)
-            .orElse(null)
-            : null;
+        // Resolve kurs: if facultyId provided, get the kurs list from FacultySubject
+        final Integer resolvedKurs;
+        if (facultyId != null) {
+            List<Integer> kursList = facultySubjectRepo
+                .findFirstByFaculty_IdAndSubject_Id(facultyId, subjectId)
+                .map(FacultySubject::getKurs)
+                .orElse(null);
+
+            if (kursList != null && !kursList.isEmpty()) {
+                // If kurs parameter is provided and in the list, use it
+                if (kurs != null && kursList.contains(kurs)) {
+                    resolvedKurs = kurs;
+                } else {
+                    // Otherwise use the first element
+                    resolvedKurs = kursList.get(0);
+                }
+            } else {
+                resolvedKurs = null;
+            }
+        } else {
+            resolvedKurs = kurs; // Use the provided kurs parameter if no facultyId
+        }
 
         List<BookDTO> list = bookRepo.findBySubjectId(subjectId)
                 .stream()

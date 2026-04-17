@@ -64,9 +64,14 @@ public class FacultySubjectController {
             @PathVariable Integer facultyId,
             @RequestParam(required = false) Integer kurs
     ) {
-        List<FacultySubject> list = (kurs != null)
-                ? facultySubjectRepo.findAllByFacultyIdAndKurs(facultyId, kurs)
-                : facultySubjectRepo.findAllSubjectsByFacultyId(facultyId);
+        List<FacultySubject> list = facultySubjectRepo.findAllSubjectsByFacultyId(facultyId);
+
+        // Filter by kurs if provided (check if kurs list contains the value)
+        if (kurs != null) {
+            list = list.stream()
+                    .filter(fs -> fs.getKurs() != null && fs.getKurs().contains(kurs))
+                    .collect(Collectors.toList());
+        }
 
         List<Integer> subjectIds = list.stream()
                 .map(fs -> fs.getSubject().getId())
@@ -100,6 +105,7 @@ public class FacultySubjectController {
                 .stream()
                 .map(FacultySubject::getKurs)
                 .filter(k -> k != null)
+                .flatMap(List::stream)  // Flatten the list of lists
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());

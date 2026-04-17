@@ -1,0 +1,348 @@
+{
+  "apiChanges": {
+    "version": "2.0",
+    "date": "2026-04-17",
+    "breaking": true,
+    "field": "kurs",
+    "changeType": "Integer -> List<Integer>"
+  },
+
+  "endpoints": [
+    {
+      "name": "Create FacultySubject",
+      "method": "POST",
+      "url": "/api/v1/faculty-subject",
+      "requestExample": {
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": [1, 2, 3]
+      },
+      "responseExample": {
+        "id": 10,
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": [1, 2, 3],
+        "facultyName": "Computer Science",
+        "subjectName": "Programming",
+        "description": "Introduction to programming",
+        "bookCount": 15
+      },
+      "notes": [
+        "kurs must be an array",
+        "kurs cannot be empty",
+        "kurs values should be between 1-4"
+      ]
+    },
+    {
+      "name": "Update FacultySubject",
+      "method": "PUT",
+      "url": "/api/v1/faculty-subject/{id}",
+      "pathParams": {
+        "id": "Integer - FacultySubject ID"
+      },
+      "requestExample": {
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": [1, 2, 3, 4]
+      },
+      "responseExample": {
+        "id": 10,
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": [1, 2, 3, 4],
+        "facultyName": "Computer Science",
+        "subjectName": "Programming",
+        "description": "Introduction to programming",
+        "bookCount": 15
+      }
+    },
+    {
+      "name": "Get FacultySubject by ID",
+      "method": "GET",
+      "url": "/api/v1/faculty-subject/{id}",
+      "pathParams": {
+        "id": "Integer - FacultySubject ID"
+      },
+      "responseExample": {
+        "id": 10,
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": [1, 2, 3],
+        "facultyName": "Computer Science",
+        "subjectName": "Programming",
+        "description": "Introduction to programming",
+        "bookCount": 0
+      }
+    },
+    {
+      "name": "Get Subjects by Faculty (All)",
+      "method": "GET",
+      "url": "/api/v1/faculty-subject/by-faculty/{facultyId}",
+      "pathParams": {
+        "facultyId": "Integer - Faculty ID"
+      },
+      "responseExample": [
+        {
+          "id": 10,
+          "facultyId": 1,
+          "subjectId": 5,
+          "kurs": [1, 2, 3],
+          "facultyName": "Computer Science",
+          "subjectName": "Programming",
+          "description": "Introduction to programming",
+          "bookCount": 15
+        },
+        {
+          "id": 11,
+          "facultyId": 1,
+          "subjectId": 7,
+          "kurs": [2],
+          "facultyName": "Computer Science",
+          "subjectName": "Data Structures",
+          "description": "Advanced data structures",
+          "bookCount": 8
+        },
+        {
+          "id": 12,
+          "facultyId": 1,
+          "subjectId": 9,
+          "kurs": [3, 4],
+          "facultyName": "Computer Science",
+          "subjectName": "Algorithms",
+          "description": "Algorithm design",
+          "bookCount": 12
+        }
+      ]
+    },
+    {
+      "name": "Get Subjects by Faculty (Filtered by Kurs)",
+      "method": "GET",
+      "url": "/api/v1/faculty-subject/by-faculty/{facultyId}?kurs={kurs}",
+      "pathParams": {
+        "facultyId": "Integer - Faculty ID"
+      },
+      "queryParams": {
+        "kurs": "Integer - Filter by kurs value (checks if array contains this value)"
+      },
+      "example": {
+        "url": "/api/v1/faculty-subject/by-faculty/1?kurs=2",
+        "description": "Returns all subjects for faculty 1 where kurs array contains 2"
+      },
+      "responseExample": [
+        {
+          "id": 10,
+          "facultyId": 1,
+          "subjectId": 5,
+          "kurs": [1, 2, 3],
+          "facultyName": "Computer Science",
+          "subjectName": "Programming",
+          "description": "Introduction to programming",
+          "bookCount": 15
+        },
+        {
+          "id": 11,
+          "facultyId": 1,
+          "subjectId": 7,
+          "kurs": [2],
+          "facultyName": "Computer Science",
+          "subjectName": "Data Structures",
+          "description": "Advanced data structures",
+          "bookCount": 8
+        }
+      ],
+      "notes": [
+        "Query param 'kurs' is a single integer",
+        "Backend checks if the kurs array CONTAINS this value",
+        "Subject with kurs=[1,2,3] will match kurs=2 filter",
+        "If kurs param omitted, returns all subjects"
+      ]
+    },
+    {
+      "name": "Get Kurs List by Faculty",
+      "method": "GET",
+      "url": "/api/v1/faculty-subject/by-faculty/{facultyId}/kurs-list",
+      "pathParams": {
+        "facultyId": "Integer - Faculty ID"
+      },
+      "description": "Returns a flattened, unique, sorted list of all kurs values for the faculty",
+      "example": {
+        "scenario": "Faculty has 3 subjects: kurs=[1,2,3], kurs=[2], kurs=[3,4]",
+        "result": [1, 2, 3, 4]
+      },
+      "responseExample": [1, 2, 3, 4],
+      "notes": [
+        "Flattens all kurs arrays from all subjects",
+        "Removes duplicates",
+        "Returns sorted array"
+      ]
+    },
+    {
+      "name": "Delete FacultySubject",
+      "method": "DELETE",
+      "url": "/api/v1/faculty-subject/{id}",
+      "pathParams": {
+        "id": "Integer - FacultySubject ID"
+      },
+      "responseExample": "FacultySubject deleted successfully",
+      "notes": [
+        "No body required",
+        "Returns string message on success"
+      ]
+    }
+  ],
+
+  "typeDefinitions": {
+    "typescript": {
+      "FacultySubjectDTO": {
+        "id": "number",
+        "facultyId": "number",
+        "subjectId": "number",
+        "kurs": "number[]",
+        "facultyName": "string (optional)",
+        "subjectName": "string (optional)",
+        "description": "string (optional)",
+        "bookCount": "number (optional)"
+      }
+    },
+    "java": {
+      "FacultySubjectDTO": {
+        "id": "Integer",
+        "facultyId": "Integer",
+        "subjectId": "Integer",
+        "kurs": "List<Integer>",
+        "facultyName": "String",
+        "subjectName": "String",
+        "description": "String",
+        "bookCount": "Long"
+      }
+    }
+  },
+
+  "validationRules": {
+    "kurs": {
+      "type": "array of integers",
+      "required": true,
+      "minLength": 1,
+      "maxLength": 4,
+      "itemRange": {
+        "min": 1,
+        "max": 4
+      },
+      "uniqueValues": true,
+      "examples": {
+        "valid": [
+          [1],
+          [1, 2],
+          [1, 2, 3],
+          [1, 2, 3, 4],
+          [2, 4]
+        ],
+        "invalid": [
+          [],
+          1,
+          "1",
+          [0],
+          [5],
+          [1, 1],
+          [1, 2, 3, 4, 5]
+        ]
+      }
+    }
+  },
+
+  "migrationExamples": {
+    "oldCreateRequest": {
+      "facultyId": 1,
+      "subjectId": 5,
+      "kurs": 2
+    },
+    "newCreateRequest": {
+      "facultyId": 1,
+      "subjectId": 5,
+      "kurs": [2]
+    },
+    "oldResponse": {
+      "id": 10,
+      "facultyId": 1,
+      "subjectId": 5,
+      "kurs": 2,
+      "facultyName": "Computer Science",
+      "subjectName": "Programming"
+    },
+    "newResponse": {
+      "id": 10,
+      "facultyId": 1,
+      "subjectId": 5,
+      "kurs": [2],
+      "facultyName": "Computer Science",
+      "subjectName": "Programming",
+      "description": "Introduction to programming",
+      "bookCount": 15
+    }
+  },
+
+  "errorExamples": [
+    {
+      "scenario": "Empty kurs array",
+      "request": {
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": []
+      },
+      "expectedError": "Validation error - kurs array cannot be empty"
+    },
+    {
+      "scenario": "Sending single integer instead of array",
+      "request": {
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": 2
+      },
+      "expectedError": "Type mismatch - expected array, got integer"
+    },
+    {
+      "scenario": "Invalid kurs value",
+      "request": {
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": [0, 5]
+      },
+      "expectedError": "Validation error - kurs values must be between 1 and 4"
+    },
+    {
+      "scenario": "Duplicate values",
+      "request": {
+        "facultyId": 1,
+        "subjectId": 5,
+        "kurs": [1, 2, 2, 3]
+      },
+      "expectedError": "Validation error - duplicate kurs values not allowed"
+    }
+  ],
+
+  "frontendCodeExamples": {
+    "react": {
+      "stateInitialization": "const [formData, setFormData] = useState({ facultyId: null, subjectId: null, kurs: [] });",
+      "addKurs": "setFormData({...formData, kurs: [...formData.kurs, newKurs]});",
+      "removeKurs": "setFormData({...formData, kurs: formData.kurs.filter(k => k !== kursToRemove)});",
+      "toggleKurs": "setFormData({...formData, kurs: formData.kurs.includes(kursValue) ? formData.kurs.filter(k => k !== kursValue) : [...formData.kurs, kursValue]});",
+      "display": "<span>Kurs: {data.kurs.join(', ')}</span>",
+      "filter": "subjects.filter(s => s.kurs.includes(selectedKurs))"
+    },
+    "vue": {
+      "data": "data() { return { formData: { facultyId: null, subjectId: null, kurs: [] } } }",
+      "addKurs": "this.formData.kurs.push(newKurs);",
+      "removeKurs": "this.formData.kurs = this.formData.kurs.filter(k => k !== kursToRemove);",
+      "display": "<span>Kurs: {{ data.kurs.join(', ') }}</span>",
+      "filter": "subjects.filter(s => s.kurs.includes(selectedKurs))"
+    },
+    "angular": {
+      "property": "kurs: number[] = [];",
+      "addKurs": "this.formData.kurs.push(newKurs);",
+      "removeKurs": "this.formData.kurs = this.formData.kurs.filter(k => k !== kursToRemove);",
+      "display": "<span>Kurs: {{ data.kurs.join(', ') }}</span>",
+      "filter": "subjects.filter(s => s.kurs.includes(selectedKurs))"
+    }
+  }
+}
+
