@@ -40,7 +40,7 @@ const AdminFacultySubject = () => {
     const [form, setForm] = useState({
         facultyId: "",
         subjectId: "",
-        kurs: "",
+        kurs: [],
     });
 
     /* =========================
@@ -102,7 +102,7 @@ const AdminFacultySubject = () => {
         setForm({
             facultyId: "",
             subjectId: "",
-            kurs: "",
+            kurs: [],
         });
         setEditId(null);
     };
@@ -116,8 +116,8 @@ const AdminFacultySubject = () => {
        CREATE / UPDATE
     ========================= */
     const handleSubmit = async () => {
-        if (!form.facultyId || !form.subjectId || !form.kurs) {
-            alert("Fakultet va Fan tanlanishi shart");
+        if (!form.facultyId || !form.subjectId || !form.kurs || form.kurs.length === 0) {
+            alert("Fakultet, Fan va Kurs tanlanishi shart");
             return;
         }
 
@@ -143,7 +143,7 @@ const AdminFacultySubject = () => {
         setForm({
             facultyId: fs.facultyId,
             subjectId: fs.subjectId,
-            kurs: fs.kurs ?? "",
+            kurs: Array.isArray(fs.kurs) ? fs.kurs : (fs.kurs ? [fs.kurs] : []),
         });
         setOpenModal(true);
     };
@@ -332,7 +332,7 @@ const AdminFacultySubject = () => {
                             </div>
                             <button
                                 onClick={() => {
-                                    setForm({ facultyId: selectedFaculty, subjectId: "", kurs: "" });
+                                    setForm({ facultyId: selectedFaculty, subjectId: "", kurs: [] });
                                     setOpenModal(true);
                                 }}
                                 disabled={!selectedFaculty}
@@ -477,7 +477,7 @@ const AdminFacultySubject = () => {
                                                 {!searchTerm && (
                                                     <button
                                                         onClick={() => {
-                                                            setForm({ facultyId: selectedFaculty, subjectId: "", kurs: "" });
+                                                            setForm({ facultyId: selectedFaculty, subjectId: "", kurs: [] });
                                                             setOpenModal(true);
                                                         }}
                                                         className="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition"
@@ -520,12 +520,16 @@ const AdminFacultySubject = () => {
                                                                                 <FiHash className="w-4 h-4" />
                                                                                 Fan ID: {fs.subjectId}
                                                                             </span>
-                                                                            {fs.kurs && (
+                                                                            {fs.kurs && Array.isArray(fs.kurs) && fs.kurs.length > 0 && (
                                                                                 <>
                                                                                     <span className="text-gray-400">•</span>
-                                                                                    <span className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600">
-                                                                                        {fs.kurs}-kurs
-                                                                                    </span>
+                                                                                    <div className="flex items-center gap-1 flex-wrap">
+                                                                                        {fs.kurs.map(k => (
+                                                                                            <span key={k} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-700">
+                                                                                                {k}-kurs
+                                                                                            </span>
+                                                                                        ))}
+                                                                                    </div>
                                                                                 </>
                                                                             )}
                                                                         </div>
@@ -560,7 +564,7 @@ const AdminFacultySubject = () => {
                                                                 </div>
 
                                                                 <div className="flex items-center gap-2">
-                                                                    {!fs.kurs && (
+                                                                    {(!fs.kurs || (Array.isArray(fs.kurs) && fs.kurs.length === 0)) && (
                                                                         <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-lg">
                                                                             Kurs tanlanmagan
                                                                         </span>
@@ -684,18 +688,43 @@ const AdminFacultySubject = () => {
                             </div>
                             {/* Kurs Selection */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Kurs *
+                                <label className="block text-sm font-medium text-gray-700 mb-3">
+                                    Kurs * <span className="text-gray-400 font-normal">(bir nechta tanlash mumkin)</span>
                                 </label>
-                                <Select
-                                    options={[1, 2, 3, 4, 5].map(k => ({ value: k, label: `${k}-kurs` }))}
-                                    value={form.kurs ? { value: form.kurs, label: `${form.kurs}-kurs` } : null}
-                                    onChange={(selected) => setForm({ ...form, kurs: selected ? selected.value : "" })}
-                                    placeholder="Kursni tanlang..."
-                                    isClearable
-                                    styles={customStyles}
-                                    noOptionsMessage={() => "Kurs topilmadi"}
-                                />
+                                <div className="flex flex-wrap gap-2">
+                                    {[1, 2, 3, 4, 5].map(k => {
+                                        const isSelected = Array.isArray(form.kurs) && form.kurs.includes(k);
+                                        return (
+                                            <button
+                                                key={k}
+                                                type="button"
+                                                onClick={() => {
+                                                    const current = Array.isArray(form.kurs) ? form.kurs : [];
+                                                    setForm({
+                                                        ...form,
+                                                        kurs: isSelected
+                                                            ? current.filter(c => c !== k)
+                                                            : [...current, k].sort((a, b) => a - b)
+                                                    });
+                                                }}
+                                                className={`
+                                                    px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all
+                                                    ${isSelected
+                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
+                                                        : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-400 hover:text-indigo-600'
+                                                    }
+                                                `}
+                                            >
+                                                {k}-kurs
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                {Array.isArray(form.kurs) && form.kurs.length > 0 && (
+                                    <p className="text-xs text-indigo-600 mt-2">
+                                        Tanlangan: {form.kurs.map(k => `${k}-kurs`).join(', ')}
+                                    </p>
+                                )}
                             </div>
                             {/* Selected Subject Preview */}
                             {form.subjectId && (
@@ -738,11 +767,11 @@ const AdminFacultySubject = () => {
                                 </button>
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={!form.subjectId || !form.kurs}
+                                    disabled={!form.subjectId || !form.kurs || form.kurs.length === 0}
                                     className={`
                     px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold 
                     rounded-xl transition shadow-lg
-                    ${!form.subjectId
+                    ${!form.subjectId || !form.kurs || form.kurs.length === 0
                                             ? 'opacity-50 cursor-not-allowed'
                                             : 'hover:from-blue-700 hover:to-indigo-700'
                                         }

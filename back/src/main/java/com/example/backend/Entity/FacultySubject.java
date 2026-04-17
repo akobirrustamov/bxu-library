@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -20,7 +22,8 @@ public class FacultySubject {
     private Faculty faculty;
     @ManyToOne
     private Subject subject;
-    private Integer kurs;
+    @ElementCollection
+    private List<Integer> kurs;
 
 
     public FacultySubject(Faculty faculty, Subject subject) {

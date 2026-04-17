@@ -15,8 +15,6 @@ public interface FacultySubjectRepo extends JpaRepository<FacultySubject, Intege
 
     boolean existsByFaculty_IdAndSubject_Id(Integer facultyId, Integer subjectId);
 
-    @Query(value = "SELECT * FROM faculty_subject WHERE faculty_id = :facultyId AND kurs = :kurs", nativeQuery = true)
-    List<FacultySubject> findAllByFacultyIdAndKurs(@Param("facultyId") Integer facultyId, @Param("kurs") Integer kurs);
 
     Optional<FacultySubject> findFirstByFaculty_IdAndSubject_Id(Integer facultyId, Integer subjectId);
 
