@@ -48,6 +48,7 @@ const PublicBooksCatalog = () => {
     try {
       const res = await ApiCall("/api/v1/book/all", "GET");
       if (!res?.error) setBooks(res.data);
+      console.log("Loaded books:", res.data);
     } catch (error) {
       console.error("Error loading books:", error);
     } finally {
@@ -597,6 +598,9 @@ const PublicBooksCatalog = () => {
                         <th className="py-4 px-3 text-left text-gray-700 font-semibold">Kitob</th>
                         <th className="py-4 px-3 text-left text-gray-700 font-semibold">Muallif</th>
                         <th className="py-4 px-3 text-left text-gray-700 font-semibold">Fan</th>
+                        <th className="py-4 px-3 text-left text-gray-700 font-semibold">Adabiyot turi</th>
+                        <th className="py-4 px-3 text-left text-gray-700 font-semibold">Soni</th>
+                        <th className="py-4 px-3 text-left text-gray-700 font-semibold">Javon</th>
                         <th className="py-4 px-3 text-left text-gray-700 font-semibold">Amallar</th>
                       </tr>
                       </thead>
@@ -642,6 +646,21 @@ const PublicBooksCatalog = () => {
                             {book.subject?.name || "Fan tanlanmagan"}
                           </span>
                             </td>
+
+                            <td className="py-2 px-3">
+                              {book.bookType==1&&"Asosiy adabiyot"}
+                              {book.bookType==2&&"Qo'shmcha adabiyot"}
+                              {book.bookType==3&&"Tayanchda mavjud emas"}
+
+                            </td>
+                            <td className="py-2 px-3">
+                              {book.libraryCount}
+                            </td>
+                            <td className="py-2 px-3">
+                              {book?.shelf?.name}
+                            </td>
+
+
                             <td className="py-2 px-3">
                               <div className="flex items-center gap-2">
                                 <button
