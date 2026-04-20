@@ -48,6 +48,7 @@ const PublicBooksCatalog = () => {
     try {
       const res = await ApiCall("/api/v1/book/all", "GET");
       if (!res?.error) setBooks(res.data);
+      console.log(res.data)
       console.log("Loaded books:", res.data);
     } catch (error) {
       console.error("Error loading books:", error);
