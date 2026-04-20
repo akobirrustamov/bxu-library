@@ -1,7 +1,15 @@
 {
   "files": {
     "main.css": "/static/css/main.b99a49f2.css",
+<<<<<<< Updated upstream
     "main.js": "/static/js/main.8df7df46.js",
+=======
+<<<<<<< HEAD
+    "main.js": "/static/js/main.bab5efeb.js",
+=======
+    "main.js": "/static/js/main.8df7df46.js",
+>>>>>>> c1210a8ae0482f86e63fcecd611bc09cd1bfdbd3
+>>>>>>> Stashed changes
     "static/js/453.71e53abe.chunk.js": "/static/js/453.71e53abe.chunk.js",
     "static/media/library1.jpg": "/static/media/library1.826d915bab8fafe3b049.jpg",
     "static/media/library3.jpg": "/static/media/library3.52879eda1263e0454ed6.jpg",
@@ -11,11 +19,27 @@
     "static/media/newbook.jpg": "/static/media/newbook.5d01c6b1a507b3374c0a.jpg",
     "index.html": "/index.html",
     "main.b99a49f2.css.map": "/static/css/main.b99a49f2.css.map",
+<<<<<<< Updated upstream
     "main.8df7df46.js.map": "/static/js/main.8df7df46.js.map",
+=======
+<<<<<<< HEAD
+    "main.bab5efeb.js.map": "/static/js/main.bab5efeb.js.map",
+=======
+    "main.8df7df46.js.map": "/static/js/main.8df7df46.js.map",
+>>>>>>> c1210a8ae0482f86e63fcecd611bc09cd1bfdbd3
+>>>>>>> Stashed changes
     "453.71e53abe.chunk.js.map": "/static/js/453.71e53abe.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b99a49f2.css",
+<<<<<<< Updated upstream
     "static/js/main.8df7df46.js"
+=======
+<<<<<<< HEAD
+    "static/js/main.bab5efeb.js"
+=======
+    "static/js/main.8df7df46.js"
+>>>>>>> c1210a8ae0482f86e63fcecd611bc09cd1bfdbd3
+>>>>>>> Stashed changes
   ]
 }

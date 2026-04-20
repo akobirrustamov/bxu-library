@@ -12,7 +12,7 @@ import {
     FiChevronRight
 } from "react-icons/fi";
 import bookImg from "../assets/newbook.jpg";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const PAGE_SIZE = 8;
 
@@ -92,15 +92,15 @@ const AdminBadiiy = () => {
                                     </p>
 
                                     <div className="flex flex-wrap gap-3">
-            <span className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-full text-sm">
-              ✨ Klassik asarlar
-            </span>
                                         <span className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-full text-sm">
-              📖 Zamonaviy adabiyot
-            </span>
+                                            ✨ Klassik asarlar
+                                        </span>
                                         <span className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-full text-sm">
-              🏆 Mukofotlanganlar
-            </span>
+                                            📖 Zamonaviy adabiyot
+                                        </span>
+                                        <span className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-full text-sm">
+                                            🏆 Mukofotlanganlar
+                                        </span>
                                     </div>
                                 </div>
 
@@ -159,18 +159,18 @@ const AdminBadiiy = () => {
 
                                         {hasPDF && (
                                             <div className="absolute top-3 left-3">
-                        <span className="px-3 py-1 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1">
-                          <FiFileText className="w-3 h-3" />
-                          PDF
-                        </span>
+                                                <span className="px-3 py-1 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1">
+                                                    <FiFileText className="w-3 h-3" />
+                                                    PDF
+                                                </span>
                                             </div>
                                         )}
 
                                         {book.genre && (
                                             <div className="absolute bottom-3 left-3">
-                        <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-semibold rounded-full shadow-lg">
-                          {book.genre}
-                        </span>
+                                                <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-semibold rounded-full shadow-lg">
+                                                    {book.genre}
+                                                </span>
                                             </div>
                                         )}
                                     </div>
@@ -244,7 +244,7 @@ const AdminBadiiy = () => {
                 )}
 
                 {/* PAGINATION */}
-                {totalPages > 1 &&  (
+                {totalPages > 1 && (
                     <div className="flex justify-center flex-wrap items-center gap-2 mt-10">
                         <button
                             disabled={page === 0}
@@ -255,19 +255,45 @@ const AdminBadiiy = () => {
                             Oldingi
                         </button>
 
-                        {[...Array(totalPages)].map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setPage(i)}
-                                className={`px-4 py-2 rounded-lg border ${
-                                    page === i
+                        {(() => {
+                            const pages = [];
+                            const delta = 2; // кол-во страниц вокруг текущей
+
+                            const addPage = (i) => pages.push(
+                                <button
+                                    key={i}
+                                    onClick={() => setPage(i)}
+                                    className={`px-4 py-2 rounded-lg border ${page === i
                                         ? "bg-blue-600 text-white border-blue-600"
                                         : "bg-white hover:bg-gray-100"
-                                }`}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
+                                        }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            );
+
+                            const addEllipsis = (key) => pages.push(
+                                <span key={key} className="px-2 py-2 text-gray-400">...</span>
+                            );
+
+                            // Всегда первая
+                            addPage(0);
+
+                            const left = Math.max(1, page - delta);
+                            const right = Math.min(totalPages - 2, page + delta);
+
+                            if (left > 1) addEllipsis("left");
+
+                            for (let i = left; i <= right; i++) addPage(i);
+
+                            if (right < totalPages - 2) addEllipsis("right");
+
+                            // Всегда последняя
+                            if (totalPages > 1) addPage(totalPages - 1);
+
+                            return pages;
+                        })()}
+
 
                         <button
                             disabled={page === totalPages - 1}
@@ -277,6 +303,25 @@ const AdminBadiiy = () => {
                             Keyingi
                             <FiChevronRight />
                         </button>
+                        <div className="flex items-center gap-2 ml-2">
+                            <input
+                                type="number"
+                                min={1}
+                                max={totalPages}
+                                placeholder="sahifa"
+                                className="w-16 px-1 py-2 rounded-lg border text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        const val = parseInt(e.target.value);
+                                        if (val >= 1 && val <= totalPages) {
+                                            setPage(val - 1);
+                                            e.target.value = "";
+                                        }
+                                    }
+                                }}
+                            />
+                            <span className="text-sm text-gray-500">/ {totalPages}</span>
+                        </div>
                     </div>
                 )}
             </div>

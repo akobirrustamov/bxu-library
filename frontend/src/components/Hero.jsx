@@ -60,7 +60,7 @@ const SearchableSelect = ({
 
     return (
         <div className="relative w-full" ref={dropdownRef}>
-            <label className="block text-gray-700 text-sm font-semibold mb-2 px-1">
+            <label className=" text-gray-700 text-sm font-semibold mb-2 px-1 h-10 flex items-end">
                 {label}
             </label>
             <button
@@ -256,7 +256,7 @@ const Hero = () => {
                 }
             })
             .finally(() => setLoading(false));
-            }, [subjectId, facultyId, kursId]);
+    }, [subjectId, facultyId, kursId]);
     const handleDownload = async (file, name) => {
         try {
             if (!file) {
@@ -333,7 +333,7 @@ const Hero = () => {
                             <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-6 sm:my-8"></div>
 
                             {/* Searchable selects section */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
                                 <SearchableSelect
                                     label="Ta'lim turini tanlang"
                                     value={educationId}

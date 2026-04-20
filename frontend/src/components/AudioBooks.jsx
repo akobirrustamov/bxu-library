@@ -18,7 +18,9 @@ import {
   FiX,
   FiImage,
   FiVolume2,
-  FiVolumeX
+  FiVolumeX,
+  FiChevronLeft,
+  FiChevronRight
 } from "react-icons/fi";
 import bookImg from "../assets/newbook.jpg";
 
@@ -72,17 +74,17 @@ const AdminAudio = () => {
 
       if (!res?.error) {
         const audiosWithMetadata = await Promise.all(
-            (res.data?.content || []).map(async (audio) => {
-              if (audio.audio?.id) {
-                try {
-                  const metadata = await getAudioMetadata(audio.audio.id);
-                  return { ...audio, ...metadata };
-                } catch {
-                  return audio;
-                }
+          (res.data?.content || []).map(async (audio) => {
+            if (audio.audio?.id) {
+              try {
+                const metadata = await getAudioMetadata(audio.audio.id);
+                return { ...audio, ...metadata };
+              } catch {
+                return audio;
               }
-              return audio;
-            })
+            }
+            return audio;
+          })
         );
 
         setAudios(audiosWithMetadata);
@@ -223,13 +225,13 @@ const AdminAudio = () => {
 
       const token = localStorage.getItem("authToken");
       const res = await fetch(
-          `${baseUrl}/api/v1/file/getFile/${file}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/octet-stream"
-            }
+        `${baseUrl}/api/v1/file/getFile/${file}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/octet-stream"
           }
+        }
       );
 
       if (!res.ok) {
@@ -264,252 +266,298 @@ const AdminAudio = () => {
      RENDER
   ========================= */
   return (
-      <div id={"audio"} className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50/30">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div id={"audio"} className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50/30">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
 
-          <div className="mb-8">
-            <div className="flex flex-col lg:flex-row lg:items-start gap-8">
-              {/* Main Title Section */}
-              <div className="flex-1">
-                <div className="flex items-center gap-6 mb-6">
-                  <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl shadow-xl">
-                    <FiMusic className="text-white text-3xl" />
-                  </div>
-                  <div>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                      Audio Kutubxona
-                    </h1>
-                    <p className="text-gray-600 text-lg">
-                      Kitoblarni tinglang, vaqtingizni samarali bering
-                    </p>
-                  </div>
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-start gap-8">
+            {/* Main Title Section */}
+            <div className="flex-1">
+              <div className="flex items-center gap-6 mb-6">
+                <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl shadow-xl">
+                  <FiMusic className="text-white text-3xl" />
                 </div>
-
-                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                  <p className="text-gray-700 mb-4">
-                    Audio kitoblar - zamonaviy ta'lim va madaniyatning ajralmas qismi.
-                    Bizning kutubxonada siz turli janr va mualliflarning audio asarlarini
-                    yuqori sifatda tinglashingiz mumkin.
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                    Audio Kutubxona
+                  </h1>
+                  <p className="text-gray-600 text-lg">
+                    Kitoblarni tinglang, vaqtingizni samarali bering
                   </p>
-
-                  <div className="flex flex-wrap gap-3">
-                    <button className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors">
-                      <span className="mr-2">🎧</span> Mashhur Audio
-                    </button>
-                    <button className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
-                      <span className="mr-2">🎙️</span> Yangi Qo'shilgan
-                    </button>
-                    <button className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
-                      <span className="mr-2">🏆</span> Eng Yaxshilar
-                    </button>
-                  </div>
                 </div>
               </div>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-2xl border border-blue-200">
-                  <div className="text-3xl font-bold text-blue-700 mb-2">850+</div>
-                  <div className="text-blue-600 font-medium">Audio Kitob</div>
-                  <div className="text-blue-500 text-sm mt-1">Har hafta yangilab boriladi</div>
-                </div>
+              <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                <p className="text-gray-700 mb-4">
+                  Audio kitoblar - zamonaviy ta'lim va madaniyatning ajralmas qismi.
+                  Bizning kutubxonada siz turli janr va mualliflarning audio asarlarini
+                  yuqori sifatda tinglashingiz mumkin.
+                </p>
 
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-5 rounded-2xl border border-purple-200">
-                  <div className="text-3xl font-bold text-purple-700 mb-2">2.4K+</div>
-                  <div className="text-purple-600 font-medium">Tinglash Soati</div>
-                  <div className="text-purple-500 text-sm mt-1">Jami davomiylik</div>
-                </div>
-
-                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-5 rounded-2xl border border-indigo-200">
-                  <div className="text-3xl font-bold text-indigo-700 mb-2">98%</div>
-                  <div className="text-indigo-600 font-medium">Yuqori Sifat</div>
-                  <div className="text-indigo-500 text-sm mt-1">Professional audio</div>
-                </div>
-
-                <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 p-5 rounded-2xl border border-cyan-200">
-                  <div className="text-3xl font-bold text-cyan-700 mb-2">24/7</div>
-                  <div className="text-cyan-600 font-medium">Doimiy</div>
-                  <div className="text-cyan-500 text-sm mt-1">Har qanday vaqtda</div>
+                <div className="flex flex-wrap gap-3">
+                  <button className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors">
+                    <span className="mr-2">🎧</span> Mashhur Audio
+                  </button>
+                  <button className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                    <span className="mr-2">🎙️</span> Yangi Qo'shilgan
+                  </button>
+                  <button className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors">
+                    <span className="mr-2">🏆</span> Eng Yaxshilar
+                  </button>
                 </div>
               </div>
             </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-2xl border border-blue-200">
+                <div className="text-3xl font-bold text-blue-700 mb-2">850+</div>
+                <div className="text-blue-600 font-medium">Audio Kitob</div>
+                <div className="text-blue-500 text-sm mt-1">Har hafta yangilab boriladi</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-5 rounded-2xl border border-purple-200">
+                <div className="text-3xl font-bold text-purple-700 mb-2">2.4K+</div>
+                <div className="text-purple-600 font-medium">Tinglash Soati</div>
+                <div className="text-purple-500 text-sm mt-1">Jami davomiylik</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-5 rounded-2xl border border-indigo-200">
+                <div className="text-3xl font-bold text-indigo-700 mb-2">98%</div>
+                <div className="text-indigo-600 font-medium">Yuqori Sifat</div>
+                <div className="text-indigo-500 text-sm mt-1">Professional audio</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 p-5 rounded-2xl border border-cyan-200">
+                <div className="text-3xl font-bold text-cyan-700 mb-2">24/7</div>
+                <div className="text-cyan-600 font-medium">Doimiy</div>
+                <div className="text-cyan-500 text-sm mt-1">Har qanday vaqtda</div>
+              </div>
+            </div>
           </div>
-
-
-
-          {/* Audio Grid */}
-          {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              </div>
-          ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {audios.map((audio) => {
-                  const isCurrentAudio = currentAudio?.id === audio.id;
-                  const audioDuration = audio.duration || duration;
-                  const audioSize = audio.size || 0;
-                  const audioProgress = isCurrentAudio ? progress : 0;
-                  const audioCurrentTime = isCurrentAudio ? currentTime : 0;
-                  const image = audio.image ? (
-                      <img
-                          src={`${baseUrl}/api/v1/file/img/${audio.image.id}`}
-                          alt={audio.name}
-                          className="w-40 h-40 object-cover rounded-2xl shadow"
-                      />
-                  ) : (
-                      <FiHeadphones className="text-blue-600 w-40 h-40 text-2xl" />
-                  );
-
-                  return (
-                      <div
-                          key={audio.id}
-                          className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 border border-gray-100 overflow-hidden"
-                      >
-                        {/* Audio Header */}
-                        <div className="relative  bg-gradient-to-r from-blue-50 to-purple-50">
-                          <div className=" mx-auto mb-2 rounded-2xl flex items-center justify-center ">
-
-                            {image}
-                          </div>
-
-                          {/* Badges */}
-                          <div className="absolute top-1 right-3 flex gap-2">
-                            {audio.audio?.id && (
-                                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                          Audio
-                        </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Audio Content */}
-                        <div className="p-4">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
-                            {audio.name}
-                          </h3>
-
-                          {audio.author && (
-                              <div className="flex items-center gap-2 text-gray-700 mb-3">
-                                <FiUser className="w-4 h-4 text-gray-400" />
-                                <span className="text-sm font-medium">{audio.author}</span>
-                              </div>
-                          )}
-
-                          {audio.description && (
-                              <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                                {audio.description}
-                              </p>
-                          )}
-
-                          {/* Audio Info */}
-                          <div className="flex items-center justify-between mb-6 text-sm text-gray-600">
-                            <div className="flex items-center gap-2">
-                              <FiClock className="w-4 h-4" />
-                              <span>{formatDuration(audioDuration)}</span>
-                            </div>
-                            {audioSize > 0 && (
-                                <div className="flex items-center gap-2">
-                                  <FiDatabase className="w-4 h-4" />
-                                  <span>{formatFileSize(audioSize)}</span>
-                                </div>
-                            )}
-                          </div>
-
-                          {/* Audio Player */}
-                          <div className="mb-2">
-                            <div className="flex items-center justify-between ">
-                        <span className="text-xs text-gray-500">
-                          {formatTime(audioCurrentTime)} / {formatDuration(audioDuration)}
-                        </span>
-                            </div>
-
-                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
-                              <div
-                                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300"
-                                  style={{ width: `${audioProgress}%` }}
-                              />
-                            </div>
-
-                            <div className="flex items-center justify-center gap-4">
-                              <button
-                                  onClick={() => playAudio(audio)}
-                                  className={`p-3 rounded-full ${
-                                      isCurrentAudio && isPlaying
-                                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
-                                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                  }`}
-                              >
-                                {isCurrentAudio && isPlaying ? <FiPause /> : <FiPlay />}
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex gap-2 pt-4 border-t border-gray-100">
-                            {audio.audio?.id ? (
-                                <button
-                                    onClick={() => handleDownload(audio.audio.id, audio.name)}
-                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-xl hover:from-green-600 hover:to-green-700 transition"
-                                >
-                                  <FiDownload />
-                                  Yuklab olish
-                                </button>
-                            ) : (
-                                <div className="flex-1 text-center px-4 py-3 bg-gray-100 text-gray-500 rounded-xl text-sm">
-                                  Audio mavjud emas
-                                </div>
-                            )}
-
-
-                          </div>
-                        </div>
-                      </div>
-                  );
-                })}
-              </div>
-          )}
-
-          {/* PAGINATION */}
-          {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-10">
-                <button
-                    disabled={page === 0}
-                    onClick={() => setPage(p => p - 1)}
-                    className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
-                >
-                  Oldingi
-                </button>
-
-                {[...Array(totalPages)].map((_, i) => (
-                    <button
-                        key={i}
-                        onClick={() => setPage(i)}
-                        className={`px-4 py-2 rounded-lg border ${
-                            page === i
-                                ? "bg-blue-600 text-white border-blue-600"
-                                : "bg-white hover:bg-gray-100"
-                        }`}
-                    >
-                      {i + 1}
-                    </button>
-                ))}
-
-                <button
-                    disabled={page === totalPages - 1}
-                    onClick={() => setPage(p => p + 1)}
-                    className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50"
-                >
-                  Keyingi
-                </button>
-              </div>
-          )}
-
         </div>
 
 
 
-        <style jsx>{`
+        {/* Audio Grid */}
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {audios.map((audio) => {
+              const isCurrentAudio = currentAudio?.id === audio.id;
+              const audioDuration = audio.duration || duration;
+              const audioSize = audio.size || 0;
+              const audioProgress = isCurrentAudio ? progress : 0;
+              const audioCurrentTime = isCurrentAudio ? currentTime : 0;
+              const image = audio.image ? (
+                <img
+                  src={`${baseUrl}/api/v1/file/img/${audio.image.id}`}
+                  alt={audio.name}
+                  className="w-40 h-40 object-cover rounded-2xl shadow"
+                />
+              ) : (
+                <FiHeadphones className="text-blue-600 w-40 h-40 text-2xl" />
+              );
+
+              return (
+                <div
+                  key={audio.id}
+                  className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1 border border-gray-100 overflow-hidden"
+                >
+                  {/* Audio Header */}
+                  <div className="relative  bg-gradient-to-r from-blue-50 to-purple-50">
+                    <div className=" mx-auto mb-2 rounded-2xl flex items-center justify-center ">
+
+                      {image}
+                    </div>
+
+                    {/* Badges */}
+                    <div className="absolute top-1 right-3 flex gap-2">
+                      {audio.audio?.id && (
+                        <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                          Audio
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Audio Content */}
+                  <div className="p-4">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+                      {audio.name}
+                    </h3>
+
+                    {audio.author && (
+                      <div className="flex items-center gap-2 text-gray-700 mb-3">
+                        <FiUser className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm font-medium">{audio.author}</span>
+                      </div>
+                    )}
+
+                    {audio.description && (
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                        {audio.description}
+                      </p>
+                    )}
+
+                    {/* Audio Info */}
+                    <div className="flex items-center justify-between mb-6 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <FiClock className="w-4 h-4" />
+                        <span>{formatDuration(audioDuration)}</span>
+                      </div>
+                      {audioSize > 0 && (
+                        <div className="flex items-center gap-2">
+                          <FiDatabase className="w-4 h-4" />
+                          <span>{formatFileSize(audioSize)}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Audio Player */}
+                    <div className="mb-2">
+                      <div className="flex items-center justify-between ">
+                        <span className="text-xs text-gray-500">
+                          {formatTime(audioCurrentTime)} / {formatDuration(audioDuration)}
+                        </span>
+                      </div>
+
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-4">
+                        <div
+                          className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-300"
+                          style={{ width: `${audioProgress}%` }}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-center gap-4">
+                        <button
+                          onClick={() => playAudio(audio)}
+                          className={`p-3 rounded-full ${isCurrentAudio && isPlaying
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        >
+                          {isCurrentAudio && isPlaying ? <FiPause /> : <FiPlay />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 pt-4 border-t border-gray-100">
+                      {audio.audio?.id ? (
+                        <button
+                          onClick={() => handleDownload(audio.audio.id, audio.name)}
+                          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-xl hover:from-green-600 hover:to-green-700 transition"
+                        >
+                          <FiDownload />
+                          Yuklab olish
+                        </button>
+                      ) : (
+                        <div className="flex-1 text-center px-4 py-3 bg-gray-100 text-gray-500 rounded-xl text-sm">
+                          Audio mavjud emas
+                        </div>
+                      )}
+
+
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* PAGINATION */}
+        {totalPages > 1 && (
+          <div className="flex justify-center flex-wrap items-center gap-2 mt-10">
+            <button
+              disabled={page === 0}
+              onClick={() => setPage((p) => p - 1)}
+              className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50 flex items-center gap-1"
+            >
+              <FiChevronLeft />
+              Oldingi
+            </button>
+
+            {(() => {
+              const pages = [];
+              const delta = 2; // кол-во страниц вокруг текущей
+
+              const addPage = (i) => pages.push(
+                <button
+                  key={i}
+                  onClick={() => setPage(i)}
+                  className={`px-4 py-2 rounded-lg border ${page === i
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white hover:bg-gray-100"
+                    }`}
+                >
+                  {i + 1}
+                </button>
+              );
+
+              const addEllipsis = (key) => pages.push(
+                <span key={key} className="px-2 py-2 text-gray-400">...</span>
+              );
+
+              // Всегда первая
+              addPage(0);
+
+              const left = Math.max(1, page - delta);
+              const right = Math.min(totalPages - 2, page + delta);
+
+              if (left > 1) addEllipsis("left");
+
+              for (let i = left; i <= right; i++) addPage(i);
+
+              if (right < totalPages - 2) addEllipsis("right");
+
+              // Всегда последняя
+              if (totalPages > 1) addPage(totalPages - 1);
+
+              return pages;
+            })()}
+
+
+            <button
+              disabled={page === totalPages - 1}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-4 py-2 rounded-lg border bg-white hover:bg-gray-100 disabled:opacity-50 flex items-center gap-1"
+            >
+              Keyingi
+              <FiChevronRight />
+            </button>
+            <div className="flex items-center gap-2 ml-2">
+              <input
+                type="number"
+                min={1}
+                max={totalPages}
+                placeholder="sahifa"
+                className="w-16 px-1 py-2 rounded-lg border text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const val = parseInt(e.target.value);
+                    if (val >= 1 && val <= totalPages) {
+                      setPage(val - 1);
+                      e.target.value = "";
+                    }
+                  }
+                }}
+              />
+              <span className="text-sm text-gray-500">/ {totalPages}</span>
+            </div>
+          </div>
+        )}
+
+      </div>
+
+
+
+      <style jsx>{`
         .animate-slide-in {
           animation: slideIn 0.3s ease-out;
         }
@@ -536,7 +584,7 @@ const AdminAudio = () => {
           overflow: hidden;
         }
       `}</style>
-      </div>
+    </div>
   );
 };
 
