@@ -47,6 +47,7 @@ public class Book {
     private String bbk;
     @Column(columnDefinition = "TEXT")
     private String annotatsiya;
+    private String authorSign;
     private Boolean isHaveLibrary;
     private Integer libraryCount;
 

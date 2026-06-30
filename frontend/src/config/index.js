@@ -1,6 +1,6 @@
 import axios from "axios";
 export let baseUrl;
-// baseUrl = "http://localhost:8080";
+// baseUrl = "http://localhost:8082";
 // baseUrl = "https://library.bxu.uz";
 baseUrl = "";
 export default function (url, method, data, param) {

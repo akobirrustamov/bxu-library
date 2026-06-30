@@ -64,6 +64,8 @@ const AdminBooks = () => {
     // View mode
     const [viewMode, setViewMode] = useState('table'); // 'table' or 'grid'
 
+    const [selectedBooks, setSelectedBooks] = useState(new Set());
+
     const [form, setForm] = useState({
         name: "",
         description: "",
@@ -74,6 +76,7 @@ const AdminBooks = () => {
         udk: "",
         bbk: "",
         annotatsiya: "",
+        authorSign: "",
         subjectId: "",
         bookType: "",
         shelfId: null,
@@ -344,6 +347,7 @@ const AdminBooks = () => {
             udk: "",
             bbk: "",
             annotatsiya: "",
+            authorSign: "",
             subjectId: "",
             bookType: "",
             shelfId: null,
@@ -366,12 +370,13 @@ const AdminBooks = () => {
             udk: b.udk || "",
             bbk: b.bbk || "",
             annotatsiya: b.annotatsiya || "",
-            subjectId: b.subject?.id ?? b.subjectId ?? "",   // ← совместимо с Book и BookDTO
+            authorSign: b.authorSign || "",
+            subjectId: b.subject?.id ?? b.subjectId ?? "",
             bookType: b.bookType ?? "",
             shelfId: b.shelfId ?? null,
             shelf: b.shelf || "",
-            pdfId: b.pdf?.id ?? b.pdfId ?? null,             // ← совместимо с Book и BookDTO
-            imageId: b.image?.id ?? b.imageId ?? null,       // ← совместимо с Book и BookDTO
+            pdfId: b.pdf?.id ?? b.pdfId ?? null,
+            imageId: b.image?.id ?? b.imageId ?? null,
         });
         setOpenModal(true);
     };
@@ -469,6 +474,81 @@ const AdminBooks = () => {
     };
 
     /* =========================
+       BOOK SELECTION & CARD PRINT
+    ========================= */
+    const toggleBookSelection = (bookId) => {
+        setSelectedBooks(prev => {
+            const next = new Set(prev);
+            if (next.has(bookId)) next.delete(bookId);
+            else next.add(bookId);
+            return next;
+        });
+    };
+
+    const toggleAllBooks = () => {
+        if (selectedBooks.size === books.length && books.length > 0) {
+            setSelectedBooks(new Set());
+        } else {
+            setSelectedBooks(new Set(books.map(b => b.id)));
+        }
+    };
+
+    const generateAndPrintCards = () => {
+        const selected = books.filter(b => selectedBooks.has(b.id));
+        if (selected.length === 0) return;
+
+        const cardsHtml = selected.map(book => `
+            <div class="card">
+                <p class="author-sign">${book.authorSign || ''}</p>
+                <p class="bold">${book.author || ''}</p>
+                <p>${book.name || ''}${book.author ? ' / ' + book.author : ''}${book.genre ? ', - ' + book.genre : ''}${book.publisher ? ', ' + book.publisher : ''}</p>
+                <p class="bold">UDK</p>
+                <p>${book.udk || ''}</p>
+                <p class="bold">BBK</p>
+                <p>${book.bbk || ''}</p>
+                <p><span class="bold">Annotatsiya</span>: ${book.annotatsiya || ''}</p>
+                <p>&nbsp;</p>
+                <p><span class="bold">Mavjud nusxalari</span>: jami ${book.libraryCount || 0}</p>
+            </div>
+        `).join('');
+
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Kitob kartochkalari</title>
+<style>
+  @page { size: A4 portrait; margin: 8mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Times New Roman', serif; font-size: 14pt; }
+  .page { display: block; }
+  .card {
+    width: 100%;
+    height: 92mm;
+    padding: 7mm 12mm;
+    border: 0.5px solid #aaa;
+    page-break-inside: avoid;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .card p { margin-bottom: 3.5pt; line-height: 1.45; }
+  .author-sign { font-weight: bold; font-size: 14pt; margin-bottom: 3pt; }
+  .bold { font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="page">${cardsHtml}</div>
+<script>window.onload = function() { window.print(); }<\/script>
+</body>
+</html>`;
+
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 15000);
+    };
+
+    /* =========================
        STATISTICS
     ========================= */
     const getStats = () => {
@@ -493,6 +573,15 @@ const AdminBooks = () => {
                 <table className="w-full">
                     <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                         <tr>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">
+                                <input
+                                    type="checkbox"
+                                    checked={books.length > 0 && selectedBooks.size === books.length}
+                                    onChange={toggleAllBooks}
+                                    className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                    title="Barchasini tanlash"
+                                />
+                            </th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold"></th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Kitob nomi</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">
@@ -501,7 +590,7 @@ const AdminBooks = () => {
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Muallif</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Fan</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Javon</th>
-                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Nashriyot</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">Nashriyot - bet</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">UDK</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">BBK</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Havola</th>
@@ -510,11 +599,18 @@ const AdminBooks = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                         {books.map((book, index) => (
-                            <tr key={book.id} className="hover:bg-gray-50 transition-colors">
+                            <tr key={book.id} className={`hover:bg-gray-50 transition-colors ${selectedBooks.has(book.id) ? 'bg-blue-50' : ''}`}>
+                                <td className="py-4 px-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedBooks.has(book.id)}
+                                        onChange={() => toggleBookSelection(book.id)}
+                                        className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                    />
+                                </td>
                                 <td className="py-4 px-2">
                                     <div>
                                         <div className="font-medium text-gray-900">{index + 1}</div>
-
                                     </div>
                                 </td>
                                 <td className="py-4 px-2">
@@ -726,6 +822,15 @@ const AdminBooks = () => {
                                 <p className="text-gray-600 mt-2">Barcha elektron kitoblar va resurslar</p>
                             </div>
                             <div className="flex items-center gap-3">
+                                {selectedBooks.size > 0 && (
+                                    <button
+                                        onClick={generateAndPrintCards}
+                                        className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-violet-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    >
+                                        <FiPrinter className="text-lg" />
+                                        Kartochka ({selectedBooks.size})
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => setOpenModal(true)}
                                     className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl"
@@ -809,7 +914,7 @@ const AdminBooks = () => {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Nashriyot
+                                        Nashriyot - bet
                                     </label>
                                     <input
                                         type="text"
@@ -1040,7 +1145,7 @@ const AdminBooks = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Nashriyot
+                                        Nashriyot - bet
                                     </label>
                                     <input
                                         type="text"
@@ -1063,6 +1168,20 @@ const AdminBooks = () => {
                                         placeholder="Kitob janri"
                                     />
                                 </div>
+                            </div>
+
+                            {/* Mualliflik belgisi */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Mualliflik belgisi
+                                </label>
+                                <input
+                                    type="text"
+                                    value={form.authorSign}
+                                    onChange={(e) => setForm({ ...form, authorSign: e.target.value })}
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                    placeholder="Masalan: A 123, B 456, ..."
+                                />
                             </div>
 
                             {/* Subject Select */}

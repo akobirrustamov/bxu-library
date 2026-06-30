@@ -24,6 +24,7 @@ public class BookDTO {
     private String udk;
     private String bbk;
     private String annotatsiya;
+    private String authorSign;
 
     private Integer subjectId;
     private String subjectName;

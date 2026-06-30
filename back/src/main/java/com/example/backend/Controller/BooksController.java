@@ -74,6 +74,7 @@ public class BooksController {
                 .udk(dto.getUdk())
                 .bbk(dto.getBbk())
                 .annotatsiya(dto.getAnnotatsiya())
+                .authorSign(dto.getAuthorSign())
                 .subject(subject)
                 .image(image)
                 .pdf(pdf)
@@ -232,6 +233,7 @@ public class BooksController {
         book.setUdk(dto.getUdk());
         book.setBbk(dto.getBbk());
         book.setAnnotatsiya(dto.getAnnotatsiya());
+        book.setAuthorSign(dto.getAuthorSign());
         book.setSubject(subject);
 
         if (dto.getImageId() != null)
@@ -376,6 +378,7 @@ public class BooksController {
                 .udk(book.getUdk())
                 .bbk(book.getBbk())
                 .annotatsiya(book.getAnnotatsiya())
+                .authorSign(book.getAuthorSign())
                 .createdAt(book.getCreatedAt())
                 .subjectId(book.getSubject().getId())
                 .subjectName(book.getSubject().getName())
