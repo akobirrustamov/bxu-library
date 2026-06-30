@@ -1,5 +1,6 @@
 package com.example.backend.Services.AuthService;
 
+import com.example.backend.DTO.ChangePasswordDTO;
 import com.example.backend.DTO.UserDTO;
 import com.example.backend.Entity.User;
 import com.example.backend.Repository.UserRepo;
@@ -7,12 +8,14 @@ import com.example.backend.Security.JwtService;
 import com.example.backend.exceptions.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -27,6 +30,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public HttpEntity<Map<String, Object>> login(UserDTO userDTO) {
@@ -68,5 +72,25 @@ public class AuthServiceImpl implements AuthService {
 
         String userId = jwtService.extractSubjectFromJwt(token);
         return userRepo.findById(UUID.fromString(userId)).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Override
+    public HttpEntity<?> changePassword(String token, ChangePasswordDTO dto) {
+        if (!jwtService.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token yaroqsiz");
+        }
+
+        String userId = jwtService.extractSubjectFromJwt(token);
+        User user = userRepo.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new RuntimeException("Foydalanuvchi topilmadi"));
+
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Eski parol noto'g'ri");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepo.save(user);
+
+        return ResponseEntity.ok("Parol muvaffaqiyatli o'zgartirildi");
     }
 }

@@ -71,6 +71,9 @@ public class BooksController {
                 .shelf(shelf)
                 .genre(dto.getGenre())
                 .path(dto.getPath())
+                .udk(dto.getUdk())
+                .bbk(dto.getBbk())
+                .annotatsiya(dto.getAnnotatsiya())
                 .subject(subject)
                 .image(image)
                 .pdf(pdf)
@@ -226,6 +229,9 @@ public class BooksController {
         book.setShelf(shelf);
         book.setGenre(dto.getGenre());
         book.setPath(dto.getPath());
+        book.setUdk(dto.getUdk());
+        book.setBbk(dto.getBbk());
+        book.setAnnotatsiya(dto.getAnnotatsiya());
         book.setSubject(subject);
 
         if (dto.getImageId() != null)
@@ -367,6 +373,9 @@ public class BooksController {
                 .publisher(book.getPublisher())
                 .genre(book.getGenre())
                 .path(book.getPath())
+                .udk(book.getUdk())
+                .bbk(book.getBbk())
+                .annotatsiya(book.getAnnotatsiya())
                 .createdAt(book.getCreatedAt())
                 .subjectId(book.getSubject().getId())
                 .subjectName(book.getSubject().getName())

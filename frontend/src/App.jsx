@@ -15,6 +15,7 @@ import OneBadiiy from "./pages/OneBadiiy";
 import AdminSubjectBooks from "./admin/AdminSubjectBooks";
 import AdminIlmiy from "./admin/AdminIlmiy";
 import AdminShelves from "./admin/Shelves";
+import AdminSettings from "./admin/AdminSettings";
 
 function App() {
     return (
@@ -40,6 +41,7 @@ function App() {
 
             <Route path="/admin/badiiy" element={<AdminBadiiy />} />
             <Route path="/admin/audio" element={<AdminAudio />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
             {/* Redirect */}
             <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
 

@@ -43,6 +43,10 @@ public class Book {
 
     private String genre;
     private String path;
+    private String udk;
+    private String bbk;
+    @Column(columnDefinition = "TEXT")
+    private String annotatsiya;
     private Boolean isHaveLibrary;
     private Integer libraryCount;
 

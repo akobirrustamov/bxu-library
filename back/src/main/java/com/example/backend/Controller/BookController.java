@@ -113,14 +113,12 @@ public class BookController {
 
     @GetMapping("/badiiy")
     public ResponseEntity<?> getAllBadiiyBooks(
-            @RequestParam(defaultValue = "") String title,
-            @RequestParam(defaultValue = "") String author,
-            @RequestParam(defaultValue = "") String publisher,
+            @RequestParam(defaultValue = "") String query,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Badiiy> badiiyBooks = badiiyRepo.findAllByTitleAuthorPublisher(title, author, publisher, pageable);
+        Page<Badiiy> badiiyBooks = badiiyRepo.findAllByTitleAuthorPublisher(query, pageable);
         return ResponseEntity.ok(badiiyBooks);
     }
 

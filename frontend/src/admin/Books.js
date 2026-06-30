@@ -71,6 +71,9 @@ const AdminBooks = () => {
         publisher: "",
         genre: "",
         path: "",
+        udk: "",
+        bbk: "",
+        annotatsiya: "",
         subjectId: "",
         bookType: "",
         shelfId: null,
@@ -338,6 +341,9 @@ const AdminBooks = () => {
             publisher: "",
             genre: "",
             path: "",
+            udk: "",
+            bbk: "",
+            annotatsiya: "",
             subjectId: "",
             bookType: "",
             shelfId: null,
@@ -357,6 +363,9 @@ const AdminBooks = () => {
             publisher: b.publisher || "",
             genre: b.genre || "",
             path: b.path || "",
+            udk: b.udk || "",
+            bbk: b.bbk || "",
+            annotatsiya: b.annotatsiya || "",
             subjectId: b.subject?.id ?? b.subjectId ?? "",   // ← совместимо с Book и BookDTO
             bookType: b.bookType ?? "",
             shelfId: b.shelfId ?? null,
@@ -493,6 +502,8 @@ const AdminBooks = () => {
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Fan</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Javon</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Nashriyot</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">UDK</th>
+                            <th className="py-4 px-2 text-left text-gray-700 font-semibold">BBK</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Havola</th>
                             <th className="py-4 px-2 text-left text-gray-700 font-semibold">Amallar</th>
                         </tr>
@@ -547,6 +558,12 @@ const AdminBooks = () => {
                                 </td>
                                 <td className="py-4 px-2">
                                     <div className="text-gray-700">{book.publisher || "Noma'lum"}</div>
+                                </td>
+                                <td className="py-4 px-2">
+                                    <div className="text-gray-700">{book.udk || "-"}</div>
+                                </td>
+                                <td className="py-4 px-2">
+                                    <div className="text-gray-700">{book.bbk || "-"}</div>
                                 </td>
                                 <td className="py-4 px-2">
                                     <div className="flex items-center gap-2">
@@ -1143,6 +1160,48 @@ const AdminBooks = () => {
                                     rows="3"
                                     className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
                                     placeholder="Kitob haqida qisqacha tavsif"
+                                />
+                            </div>
+
+                            {/* UDK & BBK */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        UDK
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={form.udk}
+                                        onChange={(e) => setForm({ ...form, udk: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        placeholder="Masalan: 635.9(075)"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        BBK
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={form.bbk}
+                                        onChange={(e) => setForm({ ...form, bbk: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                        placeholder="Masalan: 42.37я73"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Annotatsiya */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Annotatsiya
+                                </label>
+                                <textarea
+                                    value={form.annotatsiya}
+                                    onChange={(e) => setForm({ ...form, annotatsiya: e.target.value })}
+                                    rows="4"
+                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                                    placeholder="Kitob annotatsiyasini kiriting"
                                 />
                             </div>
 

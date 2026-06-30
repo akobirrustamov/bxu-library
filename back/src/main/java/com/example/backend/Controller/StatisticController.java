@@ -41,6 +41,9 @@ public class StatisticController {
         stats.put("facultySubjectsCount", facultySubjectRepo.count());
         stats.put("badiiyCount", badiiyRepo.count());
         stats.put("audioCount", audioRepo.count());
+        stats.put("asosiyAdabiyotCount", bookRepo.countByBookType(1));
+        stats.put("qoshimchaAdabiyotCount", bookRepo.countByBookType(2));
+        stats.put("tayanchdaYoqCount", bookRepo.countByBookType(3));
         /* =====================
            BOOK STATISTICS
         ===================== */

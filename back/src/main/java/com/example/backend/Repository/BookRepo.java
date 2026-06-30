@@ -73,6 +73,8 @@ public interface BookRepo extends JpaRepository<Book, Integer> {
     @Query(value = "select sum(library_count) from book", nativeQuery = true)
     Integer  bookLibraryCount();
 
+    long countByBookType(Integer bookType);
+
     @Query("""
         SELECT b.shelf.name, COALESCE(SUM(b.libraryCount), 0)
         FROM Book b

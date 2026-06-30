@@ -9,12 +9,10 @@ import org.springframework.data.jpa.repository.Query;
 public interface BadiiyRepo extends JpaRepository<Badiiy, Integer> {
 
     @Query("SELECT b FROM Badiiy b WHERE " +
-            "(:title = '' OR LOWER(b.name) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
-            "(:author = '' OR LOWER(b.author) LIKE LOWER(CONCAT('%', :author, '%'))) AND " +
-            "(:publisher = '' OR LOWER(b.publisher) LIKE LOWER(CONCAT('%', :publisher, '%'))) order by b.id desc ")
+            "(:query = '' OR LOWER(b.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(b.author) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "ORDER BY b.id DESC")
     Page<Badiiy> findAllByTitleAuthorPublisher(
-            String title,
-            String author,
-            String publisher,
+            String query,
             Pageable pageable);
 }

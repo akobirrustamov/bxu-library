@@ -21,6 +21,9 @@ public class BookDTO {
     private String publisher;
     private String genre;
     private String path;
+    private String udk;
+    private String bbk;
+    private String annotatsiya;
 
     private Integer subjectId;
     private String subjectName;

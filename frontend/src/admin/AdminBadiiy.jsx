@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import ApiCall, { baseUrl } from "../config";
-import { FiBook, FiPlus, FiEdit2, FiTrash2, FiUser, FiCalendar, FiEye, FiClock, FiDownload, FiFileText, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiBook, FiPlus, FiEdit2, FiTrash2, FiUser, FiCalendar, FiEye, FiClock, FiDownload, FiFileText, FiChevronLeft, FiChevronRight, FiSearch } from "react-icons/fi";
 import bookImg from "../assets/newbook.jpg";
 
 const AdminBadiiy = () => {
@@ -16,6 +16,11 @@ const AdminBadiiy = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
 
+    // Search state
+    const [searchQuery, setSearchQuery] = useState("");
+    const [activeSearch, setActiveSearch] = useState("");
+    const [searchType, setSearchType] = useState("name"); // "name" or "author"
+
     const [form, setForm] = useState({
         name: "",
         author: "",
@@ -28,15 +33,19 @@ const AdminBadiiy = () => {
 
     useEffect(() => {
         fetchData();
-    }, [currentPage]); // Refetch when page changes
+    }, [currentPage, activeSearch]); // Refetch when page changes or search is performed
 
+    // fetchData
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await ApiCall("/api/v1/book/badiiy", "GET", null, {
+            const params = {
                 page: currentPage,
                 size: pageSize,
-            });
+                query: activeSearch,   // ✅ бэк принимает "query"
+            };
+
+            const res = await ApiCall("/api/v1/book/badiiy", "GET", null, params);
 
             if (!res?.error) {
                 setList(res.data.content || []);
@@ -55,6 +64,17 @@ const AdminBadiiy = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSearch = () => {
+        setActiveSearch(searchQuery);
+        setCurrentPage(0); // Reset to first page when searching
+    };
+
+    const handleClearSearch = () => {
+        setSearchQuery("");
+        setActiveSearch("");
+        setCurrentPage(0);
     };
 
     const resetForm = () => {
@@ -230,6 +250,49 @@ const AdminBadiiy = () => {
                             <span className="font-semibold">Yangi kitob qo'shish</span>
                         </div>
                     </button>
+                </div>
+
+                {/* Search Section */}
+                <div className="mb-6 bg-white rounded-xl shadow-md p-4">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="flex-1 relative">
+                            <input
+                                type="text"
+                                placeholder="Kitob nomi yoki muallif bo'yicha qidiring..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearch();
+                                    }
+                                }}
+                                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            />
+                            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handleSearch}
+                                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 shadow-md hover:shadow-lg"
+                            >
+                                <FiSearch />
+                                Qidirish
+                            </button>
+                            {activeSearch && (
+                                <button
+                                    onClick={handleClearSearch}
+                                    className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                                >
+                                    Tozalash
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    {activeSearch && (
+                        <div className="mt-3 text-sm text-gray-600">
+                            Qidiruv natijasi: <span className="font-semibold text-blue-600">"{activeSearch}"</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Loading state */}
@@ -432,7 +495,7 @@ const AdminBadiiy = () => {
                                         className={`p-2 rounded-lg ${currentPage === 0
                                             ? 'text-gray-400 cursor-not-allowed'
                                             : 'text-gray-700 hover:bg-gray-100'
-                                        }`}
+                                            }`}
                                     >
                                         <FiChevronLeft className="w-5 h-5" />
                                     </button>
@@ -445,7 +508,7 @@ const AdminBadiiy = () => {
                                             className={`w-10 h-10 rounded-lg font-medium ${currentPage === pageNum
                                                 ? 'bg-blue-600 text-white'
                                                 : 'text-gray-700 hover:bg-gray-100'
-                                            }`}
+                                                }`}
                                         >
                                             {pageNum + 1}
                                         </button>
@@ -458,7 +521,7 @@ const AdminBadiiy = () => {
                                         className={`p-2 rounded-lg ${currentPage === totalPages - 1
                                             ? 'text-gray-400 cursor-not-allowed'
                                             : 'text-gray-700 hover:bg-gray-100'
-                                        }`}
+                                            }`}
                                     >
                                         <FiChevronRight className="w-5 h-5" />
                                     </button>

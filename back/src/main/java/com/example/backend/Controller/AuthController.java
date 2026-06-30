@@ -1,5 +1,6 @@
 package com.example.backend.Controller;
 
+import com.example.backend.DTO.ChangePasswordDTO;
 import com.example.backend.DTO.UserDTO;
 import com.example.backend.Security.JwtService;
 import com.example.backend.Services.AuthService.AuthService;
@@ -29,5 +30,12 @@ public class AuthController {
     @GetMapping("/decode")
     public HttpEntity<?> decode(@RequestHeader("token") String token) {
         return ResponseEntity.ok(service.decode(token));
+    }
+
+    @PutMapping("/change-password")
+    public HttpEntity<?> changePassword(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ChangePasswordDTO dto) {
+        return service.changePassword(token, dto);
     }
 }
